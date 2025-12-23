@@ -632,7 +632,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11abab897062f854d9ae5de1c4aa50f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Main.Scene.SceneButton
-  targetScene: 1
+  targetScene: 2
 --- !u!1 &383862313
 GameObject:
   m_ObjectHideFlags: 0
