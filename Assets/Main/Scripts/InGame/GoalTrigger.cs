@@ -24,7 +24,7 @@ public class GoalTrigger : MonoBehaviour
         // SEが聞こえるように少し待つ
         yield return new WaitForSeconds(waitSeconds);
 
-        //     // リザルトへ
+             // リザルトへ
         //     if (SceneController.Instance != null)
         //         SceneController.Instance.LoadScene(SceneName.Clear);
         Debug.Log("ゴールしました！");
