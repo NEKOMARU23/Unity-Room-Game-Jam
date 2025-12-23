@@ -9,13 +9,10 @@ namespace Main.Scene
     public enum SceneName
     {
         Title,
+        GameScenes,
         StageSelect,
-        Stage1_1,
-        Stage1_2,
-        Stage2_1,
-        Stage2_2,
         Clear,
-        InGameF
+        
     }
 
     /// <summary>
@@ -47,15 +44,15 @@ namespace Main.Scene
         /// </summary>
         public void LoadNextStage()
         {
-            SceneName nextStage = GetNextStage(CurrentStage);
-            if (nextStage != SceneName.Clear)
-            {
-                LoadScene(nextStage);
-            }
-            else
-            {
-                LoadScene(SceneName.Clear);
-            }
+            // SceneName nextStage = GetNextStage(CurrentStage);
+            // if (nextStage != SceneName.Clear)
+            // {
+            //     LoadScene(nextStage);
+            // }
+            // else
+            // {
+            //     LoadScene(SceneName.Clear);
+            // }
         }
 
         /// <summary>
@@ -63,33 +60,21 @@ namespace Main.Scene
         /// </summary>
         /// <param name="currentStage">現在のステージ</param>
         /// <returns>次のステージ、最後の場合はClear</returns>
-        private SceneName GetNextStage(SceneName currentStage)
-        {
-            switch (currentStage)
-            {
-                case SceneName.Stage1_1:
-                    return SceneName.Stage1_2;
-                case SceneName.Stage1_2:
-                    return SceneName.Stage2_1;
-                case SceneName.Stage2_1:
-                    return SceneName.Stage2_2;
-                case SceneName.Stage2_2:
-                    return SceneName.Clear;
-                default:
-                    return SceneName.Clear;
-            }
-        }
-
-        /// <summary>
-        /// 現在のステージがゲームステージかどうかを判定
-        /// </summary>
-        /// <returns>ゲームステージの場合true</returns>
-        public bool IsGameStage()
-        {
-            return CurrentStage == SceneName.Stage1_1 || 
-                   CurrentStage == SceneName.Stage1_2 || 
-                   CurrentStage == SceneName.Stage2_1 || 
-                   CurrentStage == SceneName.Stage2_2;
-        }
+        // private SceneName GetNextStage(SceneName currentStage)
+        // {
+        //     switch (currentStage)
+        //     {
+        //         // case SceneName.Stage1_1:
+        //         //     return SceneName.Stage1_2;
+        //         // case SceneName.Stage1_2:
+        //         //     return SceneName.Stage2_1;
+        //         // case SceneName.Stage2_1:
+        //         //     return SceneName.Stage2_2;
+        //         // case SceneName.Stage2_2:
+        //         //     return SceneName.Clear;
+        //         // default:
+        //         //     return SceneName.Clear;
+        //     }
+        // }
     }
 }
