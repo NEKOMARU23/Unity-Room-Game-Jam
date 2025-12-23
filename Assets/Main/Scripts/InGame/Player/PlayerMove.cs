@@ -16,7 +16,6 @@ namespace Main.Player
 
         private Rigidbody2D rb;
         private Vector2 moveInput = Vector2.zero;
-        private bool wasGrounded; // 前フレームの接地状態を記憶
         private PlayerAnimation playerAnim;
 
         void Awake()
@@ -28,10 +27,8 @@ namespace Main.Player
 
         void FixedUpdate()
         {
-            // 1. 攻撃中かどうかのチェック
-            // PlayerAnimationコンポーネントを取得して、現在Attackステートかを確認
-            PlayerAnimation animScript = GetComponent<PlayerAnimation>();
-            bool attacking = (animScript != null && animScript.IsAttacking());
+            // 攻撃中かどうかのチェック
+            bool attacking = (playerAnim != null && playerAnim.IsAttacking());
 
             if (attacking)
             {
@@ -47,18 +44,6 @@ namespace Main.Player
                 if (moveInput.x > 0) transform.rotation = Quaternion.Euler(0f, 0f, 0f);
                 else if (moveInput.x < 0) transform.rotation = Quaternion.Euler(0f, 180f, 0f);
             }
-
-            // --- 地面判定のデバッグログ ---
-            bool currentGrounded = IsGrounded();
-            if (currentGrounded != wasGrounded)
-            {
-                if (currentGrounded)
-                    Debug.Log("<color=green>接地しました</color>");
-                else
-                    Debug.Log("<color=yellow>空中へ離れました</color>");
-
-                wasGrounded = currentGrounded;
-            }
         }
 
         public void OnMoveInput(Vector2 input) => moveInput = input;
@@ -69,11 +54,6 @@ namespace Main.Player
             if (IsGrounded())
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-                Debug.Log("<color=cyan>ジャンプ実行！</color>");
-            }
-            else
-            {
-                Debug.Log("<color=red>接地していないためジャンプできません</color>");
             }
         }
 
@@ -84,7 +64,7 @@ namespace Main.Player
             return hit.collider != null;
         }
 
-        // シーンビューに判定用の枠を表示（実行中、接地すると緑色になります）
+        // シーンビューのデバッグ用枠表示（これは実際のゲーム画面には映りません）
         private void OnDrawGizmos()
         {
             Gizmos.color = IsGrounded() ? Color.green : Color.red;
