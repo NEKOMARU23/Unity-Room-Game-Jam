@@ -11,6 +11,7 @@ namespace Main.InGame.Core
     {
         [SerializeField] private Volume volume;
         [SerializeField] private ChannelMixer channelMixer;
+        [SerializeField] private ColorAdjustments colorAdjustments;
         [Tooltip("trueならモノクロ")]public bool isMonochrome;
 
         private void Awake()
@@ -24,17 +25,20 @@ namespace Main.InGame.Core
             }
 
             volume.profile.TryGet(out channelMixer);
+            volume.profile.TryGet(out colorAdjustments);
             isMonochrome = false;
         }
         public void EnableMono()
         {
             channelMixer.active = true;
+            colorAdjustments.active = true;
             isMonochrome = true;
         }
 
         public void DisableMono()
         {
             channelMixer.active = false;
+            colorAdjustments.active = false;
             isMonochrome = false;
         }
     }
