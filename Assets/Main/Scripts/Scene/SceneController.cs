@@ -10,7 +10,8 @@ namespace Main.Scene
     {
         Title,
         GameScenes,
-        Clear
+        StageSelect,
+        Clear,
         
     }
 
