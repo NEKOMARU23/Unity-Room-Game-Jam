@@ -1,15 +1,19 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Main.InGame.Core;
 
 namespace Main.Player
 {
     public class PlayerController : MonoBehaviour
     {
         private PlayerMove playerMove;
+        private MonochromeChange monochromeChange;
 
         void Awake()
         {
             playerMove = GetComponent<PlayerMove>();
+            monochromeChange = FindAnyObjectByType<MonochromeChange>();
         }
 
         public void OnMove(InputValue value)
@@ -35,6 +39,21 @@ namespace Main.Player
             if (value.isPressed)
             {
                 Debug.Log("Restart!");
+            }
+        }
+
+        public void OnScreenChange(InputValue value)
+        {
+            if (value.isPressed)
+            {
+                if (monochromeChange.isMonochrome == true)
+                {
+                    monochromeChange.DisableMono();
+                }
+                else
+                {
+                    monochromeChange.EnableMono();
+                }
             }
         }
     }

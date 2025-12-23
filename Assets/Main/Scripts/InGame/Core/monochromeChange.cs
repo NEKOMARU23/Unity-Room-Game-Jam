@@ -4,23 +4,38 @@ using UnityEngine.Rendering.Universal;
 
 namespace Main.InGame.Core
 {
-    public class monochromeChange : MonoBehaviour
+    ///<summary>
+    ///グローバルボリュームを取得しモノクロにする処理を書いたクラス
+    ///<summary>
+    public class MonochromeChange : MonoBehaviour
     {
         [SerializeField] private Volume volume;
         [SerializeField] private ChannelMixer channelMixer;
-        private void Start()
+        [Tooltip("trueならモノクロ")]public bool isMonochrome;
+
+        private void Awake()
         {
-            if (volume == null) Debug.LogError("グローバルボリュームが設定されていません");
+            volume ??= GetComponent<Volume>();
+
+            if (volume == null)
+            {
+                Debug.LogError("Volume がアタッチされていません");
+                return;
+            }
+
             volume.profile.TryGet(out channelMixer);
+            isMonochrome = false;
         }
-        private void EnableMono()
+        public void EnableMono()
         {
             channelMixer.active = true;
+            isMonochrome = true;
         }
 
-        private void DisableMono()
+        public void DisableMono()
         {
             channelMixer.active = false;
+            isMonochrome = false;
         }
     }
 
