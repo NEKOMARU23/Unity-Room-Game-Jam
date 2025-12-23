@@ -1,5 +1,7 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Main.InGame.Core;
 
 namespace Main.Player
 {
@@ -7,11 +9,13 @@ namespace Main.Player
     {
         private PlayerMove playerMove;
         private PlayerAnimation playerAnim;
+        private MonochromeChange monochromeChange;
 
         void Awake()
         {
             playerMove = GetComponent<PlayerMove>();
             playerAnim = GetComponent<PlayerAnimation>();
+            monochromeChange = FindAnyObjectByType<MonochromeChange>();
         }
 
         // 横移動 (A, Dキー)
@@ -36,6 +40,21 @@ namespace Main.Player
             {
                 // Trigger型なので1回呼ぶだけでOK
                 playerAnim.PlayAttack();
+            }
+        }
+
+        public void OnScreenChange(InputValue value)
+        {
+            if (value.isPressed)
+            {
+                if (monochromeChange.isMonochrome == true)
+                {
+                    monochromeChange.DisableMono();
+                }
+                else
+                {
+                    monochromeChange.EnableMono();
+                }
             }
         }
     }
