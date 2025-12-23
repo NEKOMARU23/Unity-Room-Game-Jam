@@ -6,35 +6,36 @@ namespace Main.Player
     public class PlayerController : MonoBehaviour
     {
         private PlayerMove playerMove;
+        private PlayerAnimation playerAnim;
 
         void Awake()
         {
             playerMove = GetComponent<PlayerMove>();
+            playerAnim = GetComponent<PlayerAnimation>();
         }
 
+        // 横移動 (A, Dキー)
         public void OnMove(InputValue value)
         {
             if (playerMove != null)
-            {
-                Vector2 moveInput = value.Get<Vector2>();
-                playerMove.OnMoveInput(moveInput);
-            }
+                playerMove.OnMoveInput(value.Get<Vector2>());
         }
 
+        // ジャンプ (Spaceキー)
         public void OnJump(InputValue value)
         {
-            // value.isPressed はボタンが押された瞬間に true になります
             if (playerMove != null && value.isPressed)
             {
                 playerMove.DoJump();
             }
         }
 
-        public void OnRestart(InputValue value)
+        public void OnAttack(InputValue value)
         {
-            if (value.isPressed)
+            if (playerAnim != null && value.isPressed)
             {
-                Debug.Log("Restart!");
+                // Trigger型なので1回呼ぶだけでOK
+                playerAnim.PlayAttack();
             }
         }
     }
