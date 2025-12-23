@@ -1,5 +1,8 @@
 using UnityEngine;
 using System.Collections;
+// 念のため、SceneManagerを直接使うための記述も追加しておきます
+using UnityEngine.SceneManagement;
+
 public class GoalTrigger : MonoBehaviour
 {
     [SerializeField] private string goalSeName = "GoalSE";
@@ -17,16 +20,26 @@ public class GoalTrigger : MonoBehaviour
 
     private IEnumerator PlaySeAndLoad()
     {
-        //     // ゴールSE
-        //     if (AudioManager.Instance != null)
-        //         AudioManager.Instance.Play(goalSeName);
+        // SE再生待ち（必要ならコメントを外す）
+        // if (AudioManager.Instance != null) AudioManager.Instance.Play(goalSeName);
 
-        // SEが聞こえるように少し待つ
         yield return new WaitForSeconds(waitSeconds);
 
-             // リザルトへ
-        //     if (SceneController.Instance != null)
-        //         SceneController.Instance.LoadScene(SceneName.Clear);
+        // --- 修正箇所：フルネームで指定 ---
+        // Main.Scene という名前空間の中にある SceneController を探します
+        if (Main.Scene.SceneController.Instance != null)
+        {
+            // SceneName.Clear も同様に名前空間付きで指定
+            Main.Scene.SceneController.Instance.LoadScene(Main.Scene.SceneName.Clear);
+        }
+        else
+        {
+            // もしSceneControllerが見つからない場合のバックアップ（直接読み込み）
+            // "Clear" という名前のシーンをビルド設定に入れている場合に動きます
+            Debug.LogWarning("SceneControllerが見つからないため、直接シーンを読み込みます");
+            SceneManager.LoadScene("Clear"); 
+        }
+        
         Debug.Log("ゴールしました！");
     }
 }
