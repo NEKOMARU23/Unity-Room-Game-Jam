@@ -1,62 +1,27 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
-public class monochromeChange : MonoBehaviour
+namespace Main.InGame.Core
 {
-    [Header("Target")]
-    [SerializeField] private Volume targetVolume;
-
-    [Header("Profiles (optional)")]
-    [SerializeField] private VolumeProfile normalProfile;
-    [SerializeField] private VolumeProfile monochromeProfile;
-
-    private bool isMonochrome;
-
-    private void Awake()
+    public class monochromeChange : MonoBehaviour
     {
-        if (targetVolume == null)
+        [SerializeField] private Volume volume;
+        [SerializeField] private ChannelMixer channelMixer;
+        private void Start()
         {
-            targetVolume = GetComponent<Volume>();
+            if (volume == null) Debug.LogError("グローバルボリュームが設定されていません");
+            volume.profile.TryGet(out channelMixer);
+        }
+        private void EnableMono()
+        {
+            channelMixer.active = true;
         }
 
-        if (targetVolume == null)
+        private void DisableMono()
         {
-            targetVolume = FindFirstObjectByType<Volume>();
+            channelMixer.active = false;
         }
     }
 
-    private void Update()
-    {
-        if (Keyboard.current == null)
-        {
-            return;
-        }
-
-        if (Keyboard.current.eKey.wasPressedThisFrame)
-        {
-            TogglePostEffect();
-        }
-    }
-
-    public void TogglePostEffect()
-    {
-        if (targetVolume == null)
-        {
-            return;
-        }
-
-        isMonochrome = !isMonochrome;
-
-        if (normalProfile != null && monochromeProfile != null)
-        {
-            targetVolume.profile = isMonochrome ? monochromeProfile : normalProfile;
-            targetVolume.weight = 1f;
-            targetVolume.enabled = true;
-            return;
-        }
-
-        // プロファイル差し替えが無い場合は、このVolume自体をON/OFFして切り替える
-        targetVolume.enabled = isMonochrome;
-    }
 }
