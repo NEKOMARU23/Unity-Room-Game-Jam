@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Main.InGame.Core;
@@ -10,13 +9,19 @@ namespace Main.Player
         private PlayerMove playerMove;
         private PlayerAnimation playerAnim;
         private MonochromeChange monochromeChange;
+        private RecordingSystem recordingSystem;
+        private RecordingPlaybackSystem playbackSystem;
 
         void Awake()
         {
             playerMove = GetComponent<PlayerMove>();
             playerAnim = GetComponent<PlayerAnimation>();
             monochromeChange = FindAnyObjectByType<MonochromeChange>();
+            recordingSystem = FindAnyObjectByType<RecordingSystem>();
+            playbackSystem = FindAnyObjectByType<RecordingPlaybackSystem>();
         }
+
+
 
         // 横移動 (A, Dキー)
         public void OnMove(InputValue value)
@@ -57,8 +62,29 @@ namespace Main.Player
                 else
                 {
                     monochromeChange.EnableMono();
+                    if (playbackSystem != null)
+                    {
+                        playbackSystem.PlayLastClip();
+                    }
                 }
             }
+        }
+
+        // Input Actions に "Record" を作って Q を割り当てる場合はこれを呼べます
+        public void OnRecording(InputValue value)
+        {
+            if (value.isPressed)
+            {
+                ToggleRecording();
+            }
+        }
+
+        private void ToggleRecording()
+        {
+            if (recordingSystem == null) return;
+
+            if (recordingSystem.IsRecording) recordingSystem.StopRecording();
+            else recordingSystem.StartRecording();
         }
     }
 }
