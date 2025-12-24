@@ -6,6 +6,7 @@ namespace Main.Player
     {
         private Animator anim;
         private PlayerMove playerMove;
+        [SerializeField] private GameObject attackHitbox;
 
         void Awake()
         {
@@ -42,6 +43,17 @@ namespace Main.Player
             if (anim == null) return false;
             // Animatorの現在のステートが "Attack" という名前の時
             return anim.GetCurrentAnimatorStateInfo(0).IsName("Attack");
+        }
+
+        public void ActivateAttack()
+        {
+
+            if (attackHitbox != null) attackHitbox.SetActive(true);
+        }
+
+        public void DeactivateAttack()
+        {
+            if (attackHitbox != null) attackHitbox.SetActive(false);
         }
     }
 }
