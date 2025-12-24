@@ -395,6 +395,7 @@ GameObject:
   - component: {fileID: 613114094880031334}
   - component: {fileID: 6035917595441560022}
   - component: {fileID: 5767337584246031788}
+  - component: {fileID: 4231143246631463299}
   - component: {fileID: 8011712520305817681}
   m_Layer: 0
   m_Name: Enemy
@@ -562,6 +563,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Main.Enemy.EnemyMove
   moveSpeed: 2
   moveDistance: 3
+--- !u!114 &4231143246631463299
 --- !u!114 &8011712520305817681
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -571,6 +573,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5012454395316627476}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be2369b62a46f9340842a318c6880052, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Main.InGame.Core.RecordableEntity
+  entityId: cc664b4a9b924bcd9eb34b068a1591cf
   m_Script: {fileID: 11500000, guid: ea539f714964ca54d90f7c5bffd10794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Main.Enemy.EnemyHealth
