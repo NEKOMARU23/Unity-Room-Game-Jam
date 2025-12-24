@@ -189,7 +189,12 @@ namespace Main.InGame.Core
                     // プレイヤーは複製してゴーストを動かす
                     var ghost = Instantiate(srcGo, srcGo.transform.position, srcGo.transform.rotation);
                     ghost.name = srcGo.name + "_Ghost";
+                    // Playerタグのままだと、他の処理（FindWithTag/Trigger判定など）がゴーストをプレイヤー扱いしてしまう
+                    ghost.tag = "Untagged";
                     ghost.gameObject.layer = LayerMask.NameToLayer("Player_Recorded");
+
+                    // ゴーストと現プレイヤーがぶつかって押し合わないように、Collider同士の衝突だけ無効化する
+                    IgnoreCollisionsBetween(ghost, srcGo);
 
                     var ghostRecordable = ghost.GetComponent<RecordableEntity>();
                     if (ghostRecordable != null)
@@ -271,6 +276,29 @@ namespace Main.InGame.Core
             }
 
             return list.Count == 0 ? null : list.ToArray();
+        }
+
+        private static void IgnoreCollisionsBetween(GameObject a, GameObject b)
+        {
+            if (a == null || b == null) return;
+
+            var aCols = a.GetComponentsInChildren<Collider2D>(true);
+            var bCols = b.GetComponentsInChildren<Collider2D>(true);
+            if (aCols == null || bCols == null) return;
+
+            for (int i = 0; i < aCols.Length; i++)
+            {
+                var ac = aCols[i];
+                if (ac == null) continue;
+
+                for (int j = 0; j < bCols.Length; j++)
+                {
+                    var bc = bCols[j];
+                    if (bc == null) continue;
+
+                    Physics2D.IgnoreCollision(ac, bc, true);
+                }
+            }
         }
     }
 }
