@@ -17,6 +17,11 @@ namespace Main.Player
         {
             if (anim == null || playerMove == null) return;
 
+            if (!playerMove.IsGrounded())
+            {
+                anim.ResetTrigger("Attack");
+            }
+
             // 1. 横移動速度の反映
             float horizontalSpeed = Mathf.Abs(playerMove.GetCurrentMoveInput().x);
             anim.SetFloat("Speed", horizontalSpeed);
@@ -31,7 +36,7 @@ namespace Main.Player
         {
             if (anim != null) anim.SetTrigger("Attack");
         }
-        
+
         public bool IsAttacking()
         {
             if (anim == null) return false;
