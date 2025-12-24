@@ -6,31 +6,60 @@ namespace Main.Player
     {
         private Animator anim;
         private PlayerMove playerMove;
+        private SpriteRenderer spriteRenderer;
+
+        [Header("攻撃判定設定")]
         [SerializeField] private GameObject attackHitbox;
+        // flipX が false (右向き) の時の位置
+        [SerializeField] private Vector2 attackOffsetRight = new Vector2(0.5f, 0f);
+        // flipX が true (左向き) の時の位置
+        [SerializeField] private Vector2 attackOffsetLeft = new Vector2(-0.5f, 0f);
 
         void Awake()
         {
             anim = GetComponent<Animator>();
             playerMove = GetComponent<PlayerMove>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+            // 初期状態で攻撃判定を消しておく
+            if (attackHitbox != null) attackHitbox.SetActive(false);
         }
 
         void Update()
         {
-            if (anim == null || playerMove == null) return;
+            if (anim == null || playerMove == null || spriteRenderer == null) return;
 
+            // 1. 空中にいる間は攻撃トリガーをリセット
             if (!playerMove.IsGrounded())
             {
                 anim.ResetTrigger("Attack");
             }
 
-            // 1. 横移動速度の反映
+            // 2. 横移動速度の反映
             float horizontalSpeed = Mathf.Abs(playerMove.GetCurrentMoveInput().x);
             anim.SetFloat("Speed", horizontalSpeed);
 
-            // 2. 接地判定を Jump パラメーターに反映
-            // 地面にいない（!IsGrounded）ときに Jump を true にする
+            // 3. 接地判定を Jump パラメーターに反映
             bool isInAir = !playerMove.IsGrounded();
             anim.SetBool("Jump", isInAir);
+
+            // 4. 向きに合わせて攻撃判定の位置を更新
+            UpdateAttackHitboxPosition();
+        }
+
+        private void UpdateAttackHitboxPosition()
+        {
+            if (attackHitbox == null) return;
+
+            // 1. まずコライダーが付いているオブジェクトの位置をずらす
+            Vector2 currentOffset = spriteRenderer.flipX ? attackOffsetLeft : attackOffsetRight;
+            attackHitbox.transform.localPosition = currentOffset;
+
+            // 2. もしコライダーの向きも反転させたい場合（横長の判定など）
+            // オブジェクトのローカルスケールのXを書き換えて向きを合わせる
+            Vector3 localScale = attackHitbox.transform.localScale;
+            localScale.x = spriteRenderer.flipX ? -Mathf.Abs(localScale.x) : Mathf.Abs(localScale.x);
+            attackHitbox.transform.localScale = localScale;
         }
 
         public void PlayAttack()
@@ -45,15 +74,30 @@ namespace Main.Player
             return anim.GetCurrentAnimatorStateInfo(0).IsName("Attack");
         }
 
+        // --- アニメーションイベントから呼ばれるメソッド ---
+
         public void ActivateAttack()
         {
-
             if (attackHitbox != null) attackHitbox.SetActive(true);
         }
 
         public void DeactivateAttack()
         {
             if (attackHitbox != null) attackHitbox.SetActive(false);
+        }
+
+        // デバッグ用：攻撃範囲をシーンビューに表示
+        private void OnDrawGizmosSelected()
+        {
+            if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer == null) return;
+
+            Gizmos.color = Color.orange;
+            Vector2 offset = spriteRenderer.flipX ? attackOffsetLeft : attackOffsetRight;
+            Vector3 worldPos = transform.position + (Vector3)offset;
+
+            Gizmos.DrawWireSphere(worldPos, 0.2f);
+            Gizmos.DrawLine(transform.position, worldPos);
         }
     }
 }

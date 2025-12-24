@@ -3,18 +3,24 @@ using UnityEngine;
 namespace Main.Player
 {
     [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(SpriteRenderer))]
     public class PlayerMove : MonoBehaviour
     {
         [Header("設定")]
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float jumpForce = 10f;
 
-        [Header("接地判定")]
+        [Header("接地判定（左右個別設定）")]
         [SerializeField] private LayerMask groundLayer;
         [SerializeField] private Vector2 groundCheckSize = new Vector2(0.8f, 0.1f);
-        [SerializeField] private float groundCheckOffset = 0.5f;
+        
+        // flipX が false (右向き) の時の位置
+        [SerializeField] private Vector2 groundCheckOffsetRight = new Vector2(0f, -0.5f);
+        // flipX が true (左向き) の時の位置
+        [SerializeField] private Vector2 groundCheckOffsetLeft = new Vector2(0f, -0.5f);
 
         private Rigidbody2D rb;
+        private SpriteRenderer spriteRenderer;
         private Vector2 moveInput = Vector2.zero;
         private PlayerAnimation playerAnim;
 
@@ -22,27 +28,31 @@ namespace Main.Player
         {
             rb = GetComponent<Rigidbody2D>();
             rb.freezeRotation = true;
+            spriteRenderer = GetComponent<SpriteRenderer>();
             playerAnim = GetComponent<PlayerAnimation>();
         }
 
         void FixedUpdate()
         {
-            // 攻撃中かどうかのチェック
             bool attacking = (playerAnim != null && playerAnim.IsAttacking());
 
             if (attacking)
             {
-                // 攻撃中は横移動速度を0にして、向きも変えない
                 rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
             }
             else
             {
-                // 攻撃中でない時のみ、通常の移動処理を行う
                 rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
 
-                // キャラクターの向きを更新
-                if (moveInput.x > 0) transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-                else if (moveInput.x < 0) transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+                // SpriteRendererの flipX を使用して反転
+                if (moveInput.x > 0) 
+                {
+                    spriteRenderer.flipX = false;
+                }
+                else if (moveInput.x < 0) 
+                {
+                    spriteRenderer.flipX = true;
+                }
             }
         }
 
@@ -51,12 +61,8 @@ namespace Main.Player
 
         public void DoJump()
         {
-            if (playerAnim != null && playerAnim.IsAttacking())
-            {
-                // Debug.Log("攻撃中のためジャンプ不可");
-                return;
-            }
-            
+            if (playerAnim != null && playerAnim.IsAttacking()) return;
+
             if (IsGrounded())
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
@@ -65,17 +71,40 @@ namespace Main.Player
 
         public bool IsGrounded()
         {
-            Vector2 origin = (Vector2)transform.position + Vector2.down * groundCheckOffset;
+            // flipX の状態を見て使用するオフセットを切り替える
+            Vector2 currentOffset = spriteRenderer.flipX ? groundCheckOffsetLeft : groundCheckOffsetRight;
+            Vector2 origin = (Vector2)transform.position + currentOffset;
+
             RaycastHit2D hit = Physics2D.BoxCast(origin, groundCheckSize, 0f, Vector2.down, 0.1f, groundLayer);
             return hit.collider != null;
         }
 
-        // シーンビューのデバッグ用枠表示（これは実際のゲーム画面には映りません）
         private void OnDrawGizmos()
         {
-            Gizmos.color = IsGrounded() ? Color.green : Color.red;
-            Vector2 origin = (Vector2)transform.position + Vector2.down * groundCheckOffset;
+            if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer == null) return;
+
+            // 向きに応じた位置を計算
+            Vector2 currentOffset = spriteRenderer.flipX ? groundCheckOffsetLeft : groundCheckOffsetRight;
+            Vector2 origin = (Vector2)transform.position + currentOffset;
+
+            bool grounded = IsGrounded();
+
+            // 1. 塗りつぶしのボックス（半透明）
+            Gizmos.color = grounded ? new Color(0, 1, 0, 0.3f) : new Color(1, 0, 0, 0.3f);
+            Gizmos.DrawCube(origin, groundCheckSize);
+
+            // 2. 枠線（くっきりした色）
+            Gizmos.color = grounded ? Color.green : Color.red;
             Gizmos.DrawWireCube(origin, groundCheckSize);
+
+            // 3. 中心からの繋がりを示す線
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(transform.position, origin);
+
+            // 4. 判定の向き（下向き）
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawRay(origin, Vector2.down * 0.2f);
         }
     }
 }
