@@ -45,36 +45,37 @@ namespace Main.Enemy
         {
             isDead = true;
 
-            // 1. 見た目を倒れた画像に変更
-            if (deadSprite != null && spriteRenderer != null)
-            {
-                spriteRenderer.sprite = deadSprite;
-            }
+            if (deadSprite != null) spriteRenderer.sprite = deadSprite;
 
-            // 2. 移動スクリプトを停止（EnemyMoveがついている場合）
-            if (TryGetComponent<EnemyMove>(out EnemyMove move))
-            {
-                move.enabled = false;
-            }
+            if (TryGetComponent<EnemyMove>(out EnemyMove move)) move.enabled = false;
 
-            // 3. 物理的に固定（押されても動かない「静的オブジェクト」化）
+            // --- 物理挙動の強制リセット ---
             if (rb != null)
             {
-                rb.bodyType = RigidbodyType2D.Static;
+                rb.bodyType = RigidbodyType2D.Dynamic; // 動ける状態にする
+                rb.freezeRotation = true;              // 転がらないようにする
+
+                // 重要：スリープ状態（計算停止）を解除して、物理演算を強制開始させる
+                rb.WakeUp();
+
+                // 押しやすくするための設定
+                rb.linearDamping = 0.5f;   // 空気抵抗（以前のDrag）を低く
+                rb.mass = 0.8f;            // プレイヤーより少し軽くすると押しやすい
             }
 
-            // 4. レイヤーをGroundに変更（接地判定の対象にする）
+            // コライダーを実体化（すり抜け防止）
+            if (TryGetComponent<Collider2D>(out Collider2D col))
+            {
+                col.isTrigger = false;
+
+                // もし滑りが悪いなら、プログラムから摩擦0のマテリアルを適用する
+                // PhysicsMaterial2D frictionZero = new PhysicsMaterial2D { friction = 0, bounciness = 0 };
+                // col.sharedMaterial = frictionZero;
+            }
+
+            // レイヤー変更
             int groundLayer = LayerMask.NameToLayer(groundLayerName);
-            if (groundLayer != -1)
-            {
-                gameObject.layer = groundLayer;
-            }
-            
-            // 5. 描画順を少し下げて、プレイヤーの背後に回す
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.sortingOrder -= 1;
-            }
+            if (groundLayer != -1) gameObject.layer = groundLayer;
         }
     }
 }

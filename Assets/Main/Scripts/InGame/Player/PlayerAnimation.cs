@@ -35,15 +35,16 @@ namespace Main.Player
                 anim.ResetTrigger("Attack");
             }
 
-            // 2. 横移動速度の反映
-            float horizontalSpeed = Mathf.Abs(playerMove.GetCurrentMoveInput().x);
+            // --- 修正点：Rigidbodyの速度を取得してアニメーションに反映 ---
+            // 入力値(moveInput)ではなく、物理的な移動速度(linearVelocity)の絶対値を使用
+            float horizontalSpeed = Mathf.Abs(playerMove.GetVelocity().x);
             anim.SetFloat("Speed", horizontalSpeed);
 
-            // 3. 接地判定を Jump パラメーターに反映
+            // 2. 接地判定を Jump パラメーターに反映
             bool isInAir = !playerMove.IsGrounded();
             anim.SetBool("Jump", isInAir);
 
-            // 4. 向きに合わせて攻撃判定の位置を更新
+            // 3. 向きに合わせて攻撃判定の位置を更新
             UpdateAttackHitboxPosition();
         }
 
@@ -55,7 +56,7 @@ namespace Main.Player
             Vector2 currentOffset = spriteRenderer.flipX ? attackOffsetLeft : attackOffsetRight;
             attackHitbox.transform.localPosition = currentOffset;
 
-            // 2. もしコライダーの向きも反転させたい場合（横長の判定など）
+            // 2. コライダーの向きも反転させる（横長の判定などに対応）
             // オブジェクトのローカルスケールのXを書き換えて向きを合わせる
             Vector3 localScale = attackHitbox.transform.localScale;
             localScale.x = spriteRenderer.flipX ? -Mathf.Abs(localScale.x) : Mathf.Abs(localScale.x);
@@ -92,7 +93,7 @@ namespace Main.Player
             if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
             if (spriteRenderer == null) return;
 
-            Gizmos.color = Color.orange;
+             Gizmos.color = Color.orange;
             Vector2 offset = spriteRenderer.flipX ? attackOffsetLeft : attackOffsetRight;
             Vector3 worldPos = transform.position + (Vector3)offset;
 

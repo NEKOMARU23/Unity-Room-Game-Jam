@@ -57,6 +57,8 @@ namespace Main.Player
         }
 
         public void OnMoveInput(Vector2 input) => moveInput = input;
+        
+        public Vector2 GetVelocity() => rb != null ? rb.linearVelocity : Vector2.zero;
         public Vector2 GetCurrentMoveInput() => moveInput;
 
         public void DoJump()
