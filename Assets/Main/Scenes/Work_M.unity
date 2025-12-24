@@ -127,6 +127,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2097110467970130509, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2281311877913749239, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -167,9 +171,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2957361481964927359, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 191
+      objectReference: {fileID: 0}
     - target: {fileID: 3486523092077471686, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
       propertyPath: m_Name
       value: InGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 4290798184489607761, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5574535849868574529, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 64
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
