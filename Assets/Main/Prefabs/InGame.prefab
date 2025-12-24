@@ -231,6 +231,7 @@ Transform:
   - {fileID: 6058895909442971675}
   - {fileID: 243440308984543028}
   - {fileID: 1183961823395089192}
+  - {fileID: 2606799868068648215}
   - {fileID: 2006576270036435157}
   - {fileID: 2718417023945688638}
   - {fileID: 4760838757735175902}
@@ -458,6 +459,67 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!1 &6645982938470590993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2606799868068648215}
+  - component: {fileID: 2942726399672215708}
+  - component: {fileID: 9477482738736586}
+  m_Layer: 0
+  m_Name: RecordingManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2606799868068648215
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6645982938470590993}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2281311877913749239}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2942726399672215708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6645982938470590993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f498d755eeabc7a46a037eda3a2beaf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Main.InGame.Core.RecordingSystem
+  sampleInFixedUpdate: 1
+--- !u!114 &9477482738736586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6645982938470590993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d79b10d33ce12842aded2a6addfccec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Main.InGame.Core.RecordingPlaybackSystem
+  recordingSystem: {fileID: 2942726399672215708}
+  playerSource: {fileID: 5472335572349024156}
+  destroyGhostOnStop: 1
 --- !u!1 &7308563772655709837
 GameObject:
   m_ObjectHideFlags: 0
