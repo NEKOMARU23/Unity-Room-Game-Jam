@@ -51,6 +51,12 @@ namespace Main.Player
 
         public void DoJump()
         {
+            if (playerAnim != null && playerAnim.IsAttacking())
+            {
+                // Debug.Log("攻撃中のためジャンプ不可");
+                return;
+            }
+            
             if (IsGrounded())
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);

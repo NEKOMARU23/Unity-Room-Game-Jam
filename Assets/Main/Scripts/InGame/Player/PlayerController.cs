@@ -43,8 +43,11 @@ namespace Main.Player
         {
             if (playerAnim != null && value.isPressed)
             {
-                // Trigger型なので1回呼ぶだけでOK
-                playerAnim.PlayAttack();
+                // PlayerMoveの接地判定をチェック
+                if (playerMove != null && playerMove.IsGrounded())
+                {
+                    playerAnim.PlayAttack();
+                }
             }
         }
 
