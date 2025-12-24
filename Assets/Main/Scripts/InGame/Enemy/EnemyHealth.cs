@@ -14,11 +14,52 @@ namespace Main.Enemy
         private Rigidbody2D rb;
         private bool isDead = false;
 
+        public bool IsDead => isDead;
+
+        private Sprite originalSprite;
+        private int originalLayer;
+        private int originalSortingOrder;
+        private RigidbodyType2D originalBodyType;
+        private bool originalEnemyMoveEnabled;
+        private bool hasOriginalSnapshot;
+
         void Awake()
         {
             currentHealth = maxHealth;
             spriteRenderer = GetComponent<SpriteRenderer>();
             rb = GetComponent<Rigidbody2D>();
+
+            CaptureOriginalSnapshot();
+        }
+
+        private void CaptureOriginalSnapshot()
+        {
+            if (hasOriginalSnapshot) return;
+
+            originalLayer = gameObject.layer;
+            if (spriteRenderer != null)
+            {
+                originalSprite = spriteRenderer.sprite;
+                originalSortingOrder = spriteRenderer.sortingOrder;
+            }
+            else
+            {
+                originalSprite = null;
+                originalSortingOrder = 0;
+            }
+
+            originalBodyType = rb != null ? rb.bodyType : RigidbodyType2D.Dynamic;
+
+            if (TryGetComponent<EnemyMove>(out EnemyMove move))
+            {
+                originalEnemyMoveEnabled = move.enabled;
+            }
+            else
+            {
+                originalEnemyMoveEnabled = false;
+            }
+
+            hasOriginalSnapshot = true;
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -75,6 +116,54 @@ namespace Main.Enemy
             {
                 spriteRenderer.sortingOrder -= 1;
             }
+        }
+
+        // 再生用：録画時点で死んでいたなら同じ見た目/物理状態にする
+        public void ApplyRecordedDeathState(bool shouldBeDead)
+        {
+            // 再生中は「録画フレームの状態」に合わせる必要があるので、死→生 の復帰も許可する
+            if (shouldBeDead)
+            {
+                if (isDead) return;
+                Die();
+            }
+            else
+            {
+                if (!isDead) return;
+                RestoreAliveForPlayback();
+            }
+        }
+
+        private void RestoreAliveForPlayback()
+        {
+            CaptureOriginalSnapshot();
+
+            isDead = false;
+            currentHealth = maxHealth;
+
+            // 見た目を元に戻す
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.sprite = originalSprite;
+                spriteRenderer.sortingOrder = originalSortingOrder;
+            }
+
+            // 移動を元に戻す
+            if (TryGetComponent<EnemyMove>(out EnemyMove move))
+            {
+                move.enabled = originalEnemyMoveEnabled;
+            }
+
+            // 物理を元に戻す
+            if (rb != null)
+            {
+                rb.bodyType = originalBodyType;
+                rb.linearVelocity = Vector2.zero;
+                rb.angularVelocity = 0f;
+            }
+
+            // レイヤーを元に戻す
+            gameObject.layer = originalLayer;
         }
     }
 }

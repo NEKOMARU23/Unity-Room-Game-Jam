@@ -15,10 +15,16 @@ namespace Main.InGame.Core
             public int entityIndex;
             public Transform transform;
             public Rigidbody2D rb2d;
+            public Animator animator;
+            public Main.Enemy.EnemyHealth enemyHealth;
+            public bool wasAttacking;
 
             public GameObject ownedInstance;
             public Behaviour[] disabledBehaviours;
             public RigidbodyType2D? originalBodyType;
+            public AnimatorUpdateMode? originalAnimatorUpdateMode;
+            public float originalAnimatorSpeed;
+            public bool originalAnimatePhysics;
         }
 
         private readonly System.Collections.Generic.List<PlaybackTarget> targets = new();
@@ -101,6 +107,13 @@ namespace Main.InGame.Core
                     }
                 }
 
+                if (t.animator != null)
+                {
+                    if (t.originalAnimatorUpdateMode.HasValue) t.animator.updateMode = t.originalAnimatorUpdateMode.Value;
+                    t.animator.speed = t.originalAnimatorSpeed;
+                    t.animator.animatePhysics = t.originalAnimatePhysics;
+                }
+
                 if (t.ownedInstance != null && destroyGhostOnStop)
                 {
                     Destroy(t.ownedInstance);
@@ -133,6 +146,21 @@ namespace Main.InGame.Core
                 var t = targets[i];
                 if (t == null || t.transform == null) continue;
 
+                // alive/dead (active)
+                var go = t.transform.gameObject;
+                bool shouldBeActive = clip.GetActive(frameIndex, t.entityIndex);
+                if (go.activeSelf != shouldBeActive)
+                {
+                    go.SetActive(shouldBeActive);
+                }
+
+                // enemy death appearance/state (sprite swap etc.)
+                if (t.enemyHealth != null)
+                {
+                    bool shouldBeDead = clip.GetEnemyDead(frameIndex, t.entityIndex);
+                    t.enemyHealth.ApplyRecordedDeathState(shouldBeDead);
+                }
+
                 var pos = clip.GetPosition(frameIndex, t.entityIndex);
                 var rot = clip.GetRotation(frameIndex, t.entityIndex);
 
@@ -152,6 +180,21 @@ namespace Main.InGame.Core
                 var current = t.transform.position;
                 current.z = pos.z;
                 t.transform.position = current;
+
+                // animation
+                if (t.animator != null && shouldBeActive)
+                {
+                    // parameter-driven playback to avoid state-machine fighting
+                    t.animator.SetFloat("Speed", clip.GetAnimatorSpeed(frameIndex, t.entityIndex));
+                    t.animator.SetBool("Jump", clip.GetAnimatorJump(frameIndex, t.entityIndex));
+
+                    bool attacking = clip.GetAnimatorAttack(frameIndex, t.entityIndex);
+                    if (attacking && !t.wasAttacking)
+                    {
+                        t.animator.SetTrigger("Attack");
+                    }
+                    t.wasAttacking = attacking;
+                }
             }
         }
 
@@ -204,6 +247,8 @@ namespace Main.InGame.Core
 
                     var disabled = DisableMovementBehaviours(ghost);
                     var rb2d = ghost.GetComponent<Rigidbody2D>();
+                    var animator = ghost.GetComponent<Animator>();
+                    var enemyHealth = ghost.GetComponent<Main.Enemy.EnemyHealth>();
                     RigidbodyType2D? originalBodyType = null;
                     if (rb2d != null)
                     {
@@ -211,6 +256,18 @@ namespace Main.InGame.Core
                         rb2d.linearVelocity = Vector2.zero;
                         rb2d.angularVelocity = 0f;
                         rb2d.bodyType = RigidbodyType2D.Kinematic;
+                    }
+
+                    AnimatorUpdateMode? originalUpdateMode = null;
+                    float originalAnimSpeed = 1f;
+                    bool originalAnimatePhysics = false;
+                    if (animator != null)
+                    {
+                        originalUpdateMode = animator.updateMode;
+                        originalAnimSpeed = animator.speed;
+                        originalAnimatePhysics = animator.animatePhysics;
+                        animator.updateMode = AnimatorUpdateMode.Fixed;
+                        animator.animatePhysics = true;
                     }
 
                     targets.Add(new PlaybackTarget
@@ -218,9 +275,14 @@ namespace Main.InGame.Core
                         entityIndex = entityIndex,
                         transform = ghost.transform,
                         rb2d = rb2d,
+                        animator = animator,
+                        enemyHealth = enemyHealth,
                         ownedInstance = ghost,
                         disabledBehaviours = disabled,
                         originalBodyType = originalBodyType,
+                        originalAnimatorUpdateMode = originalUpdateMode,
+                        originalAnimatorSpeed = originalAnimSpeed,
+                        originalAnimatePhysics = originalAnimatePhysics,
                     });
                 }
                 else
@@ -228,6 +290,8 @@ namespace Main.InGame.Core
                     // 敵（その他）は現物を動かす。上書き防止で移動スクリプトを止める
                     var disabled = DisableMovementBehaviours(srcGo);
                     var rb2d = srcGo.GetComponent<Rigidbody2D>();
+                    var animator = srcGo.GetComponent<Animator>();
+                    var enemyHealth = srcGo.GetComponent<Main.Enemy.EnemyHealth>();
                     RigidbodyType2D? originalBodyType = null;
                     if (rb2d != null)
                     {
@@ -237,14 +301,31 @@ namespace Main.InGame.Core
                         rb2d.bodyType = RigidbodyType2D.Kinematic;
                     }
 
+                    AnimatorUpdateMode? originalUpdateMode = null;
+                    float originalAnimSpeed = 1f;
+                    bool originalAnimatePhysics = false;
+                    if (animator != null)
+                    {
+                        originalUpdateMode = animator.updateMode;
+                        originalAnimSpeed = animator.speed;
+                        originalAnimatePhysics = animator.animatePhysics;
+                        animator.updateMode = AnimatorUpdateMode.Fixed;
+                        animator.animatePhysics = true;
+                    }
+
                     targets.Add(new PlaybackTarget
                     {
                         entityIndex = entityIndex,
                         transform = srcGo.transform,
                         rb2d = rb2d,
+                        animator = animator,
+                        enemyHealth = enemyHealth,
                         ownedInstance = null,
                         disabledBehaviours = disabled,
                         originalBodyType = originalBodyType,
+                        originalAnimatorUpdateMode = originalUpdateMode,
+                        originalAnimatorSpeed = originalAnimSpeed,
+                        originalAnimatePhysics = originalAnimatePhysics,
                     });
                 }
             }
@@ -266,6 +347,14 @@ namespace Main.InGame.Core
             {
                 playerMove.enabled = false;
                 list.Add(playerMove);
+            }
+
+            // 再生中はAnimatorを直接駆動するので、PlayerAnimationの自動更新は止める
+            var playerAnim = go.GetComponent<Main.Player.PlayerAnimation>();
+            if (playerAnim != null && playerAnim.enabled)
+            {
+                playerAnim.enabled = false;
+                list.Add(playerAnim);
             }
 
             var enemyMove = go.GetComponent<Main.Enemy.EnemyMove>();
