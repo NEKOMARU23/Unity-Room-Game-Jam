@@ -1,4 +1,5 @@
 using UnityEngine;
+using Main.Damage;
 
 namespace Main.Enemy
 {
@@ -84,38 +85,45 @@ namespace Main.Enemy
 
         private void Die()
         {
+            if (isDead) return; // 二重実行防止
             isDead = true;
 
-            // 1. 見た目を倒れた画像に変更
-            if (deadSprite != null && spriteRenderer != null)
-            {
-                spriteRenderer.sprite = deadSprite;
-            }
+            // 1. 見た目を変更
+            if (deadSprite != null) spriteRenderer.sprite = deadSprite;
 
-            // 2. 移動スクリプトを停止（EnemyMoveがついている場合）
-            if (TryGetComponent<EnemyMove>(out EnemyMove move))
-            {
-                move.enabled = false;
-            }
+            // 2. 自律移動スクリプトを止める
+            if (TryGetComponent<EnemyMove>(out EnemyMove move)) move.enabled = false;
 
-            // 3. 物理的に固定（押されても動かない「静的オブジェクト」化）
+            // 3. 物理挙動：プレイヤーが押して動かせる設定に変更
             if (rb != null)
             {
-                rb.bodyType = RigidbodyType2D.Static;
+                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.freezeRotation = true;
+                rb.WakeUp(); // 物理演算を強制再開
+                rb.linearDamping = 0.5f;
+                rb.mass = 0.8f;
             }
 
-            // 4. レイヤーをGroundに変更（接地判定の対象にする）
+            // 4. 判定の整理：本体を実体化し、攻撃判定だけを消す
+            Collider2D[] allColliders = GetComponentsInChildren<Collider2D>();
+            foreach (var col in allColliders)
+            {
+                // そのコライダーのオブジェクトに DamageSource が付いている場合
+                if (col.TryGetComponent<DamageSource>(out var ds))
+                {
+                    ds.enabled = false; // スクリプトをOFF
+                    col.enabled = false; // ★攻撃用コライダーだけをピンポイントで消す
+                }
+                else
+                {
+                    // 本体（地面用）のコライダーは Trigger を解除して「動かせる壁」にする
+                    col.isTrigger = false;
+                }
+            }
+
+            // 5. レイヤー変更（プレイヤーの足場として認識されるように）
             int groundLayer = LayerMask.NameToLayer(groundLayerName);
-            if (groundLayer != -1)
-            {
-                gameObject.layer = groundLayer;
-            }
-            
-            // 5. 描画順を少し下げて、プレイヤーの背後に回す
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.sortingOrder -= 1;
-            }
+            if (groundLayer != -1) gameObject.layer = groundLayer;
         }
 
         // 再生用：録画時点で死んでいたなら同じ見た目/物理状態にする

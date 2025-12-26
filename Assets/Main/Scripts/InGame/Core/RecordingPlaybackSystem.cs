@@ -364,6 +364,17 @@ namespace Main.InGame.Core
                 list.Add(enemyMove);
             }
 
+            //これはNEKOHAKOのコード追加。リプレイ中は攻撃判定を無効化するもの
+            var damageSources = go.GetComponentsInChildren<Main.Damage.DamageSource>();
+            foreach (var ds in damageSources)
+            {
+                if (ds != null && ds.enabled)
+                {
+                    ds.enabled = false;
+                    list.Add(ds);
+                }
+            }
+
             return list.Count == 0 ? null : list.ToArray();
         }
 

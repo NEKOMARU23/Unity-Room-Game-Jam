@@ -12,7 +12,7 @@ namespace Main.Scene
         GameScenes,
         StageSelect,
         Clear,
-        
+        //Result,
     }
 
     /// <summary>
