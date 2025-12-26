@@ -594,7 +594,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Main.Player.PlayerHealth
   maxHealth: 3
-  damageCooldown: 0.5
+  damageCooldown: 2
 --- !u!4 &1864617802 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6632532534411531637, guid: 2c74632436eb3ba49960298ee745095f, type: 3}

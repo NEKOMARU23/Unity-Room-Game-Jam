@@ -10,6 +10,8 @@ namespace Main.Damage
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!this.enabled) return;
+
+
         }
     }
 }
