@@ -10,8 +10,6 @@ namespace Main.Damage
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!this.enabled) return;
-
-            Debug.Log($"DamageSource ({gameObject.name}) が {other.name} に触れました");
         }
     }
 }

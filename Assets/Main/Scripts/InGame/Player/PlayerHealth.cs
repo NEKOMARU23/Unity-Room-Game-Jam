@@ -1,6 +1,7 @@
 using UnityEngine;
 using Main.Scene;
 using Main.Damage;
+using Main.InGame.Core; // RecordingPlaybackSystem を参照するために追加
 
 namespace Main.Player
 {
@@ -8,33 +9,40 @@ namespace Main.Player
     {
         [Header("ステータス")]
         [SerializeField] private int maxHealth = 3;
-        [SerializeField] private float damageCooldown = 0.5f; // ダメージ後の無敵時間
+        [SerializeField] private float damageCooldown = 0.5f;
 
-        private int currentHealth;
+        // 値を保持するために static にする
+        private static int currentHealth;
+        private static bool isDead = false;
+
         private float lastDamageTime;
-        private bool isDead = false;
 
         void Awake()
         {
-            currentHealth = maxHealth;
-            Debug.Log($"<color=cyan>PlayerHealth初期化: HP {currentHealth}/{maxHealth}</color>");
+            // 再生システムが存在し、かつ「再生中」であれば、絶対に初期化しない
+            var playbackSystem = Object.FindAnyObjectByType<RecordingPlaybackSystem>();
+            bool isReplaying = playbackSystem != null && playbackSystem.IsPlaying;
+
+            if (!isReplaying)
+            {
+                currentHealth = maxHealth;
+                isDead = false;
+                Debug.Log($"<color=cyan>通常プレイ開始: HP {currentHealth}/{maxHealth} にリセット</color>");
+            }
+            else
+            {
+                Debug.Log($"<color=yellow>リプレイ中につきHPリセットをスキップ: 現在のHP {currentHealth}</color>");
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            // 1. 死亡中なら何もしない
             if (isDead) return;
-
-            // 2. 無敵時間（クールタイム）中なら何もしない
             if (Time.time < lastDamageTime + damageCooldown) return;
-
-            // 3. 【自爆防止】当たった相手が自分自身、または自分の子供（AttackRangeなど）なら無視
             if (other.transform.IsChildOf(this.transform)) return;
 
-            // 4. ダメージ源（DamageSource）を持っているかチェック
             if (other.TryGetComponent<DamageSource>(out var source))
             {
-                // 5. 相手のダメージ設定が有効（敵が生きている等）な場合のみ実行
                 if (source.enabled)
                 {
                     TakeDamage(source.DamageAmount, other.gameObject.name);
@@ -42,15 +50,14 @@ namespace Main.Player
             }
         }
 
-        // 引数に「何に当たったか」を追加してログを分かりやすく
         public void TakeDamage(int amount, string sourceName = "Unknown")
         {
             if (isDead) return;
 
             currentHealth -= amount;
-            lastDamageTime = Time.time; // ダメージを受けた時間を記録
+            lastDamageTime = Time.time;
 
-            Debug.Log($"<color=red>ダメージ受領!</color> 発生源: {sourceName} | ダメージ量: {amount} | 残りHP: {currentHealth}");
+            Debug.Log($"<color=red>ダメージ受領!</color> 発生源: {sourceName} | 残りHP: {currentHealth}");
 
             if (currentHealth <= 0)
             {
@@ -63,15 +70,9 @@ namespace Main.Player
             if (isDead) return;
             isDead = true;
 
-            Debug.Log("<color=yellow><b>プレイヤー死亡：リザルトシーンへ遷移します</b></color>");
-
             if (SceneController.Instance != null)
             {
                 SceneController.Instance.LoadScene(SceneName.Clear);
-            }
-            else
-            {
-                Debug.LogWarning("SceneControllerが見つかりません。遷移をスキップしました。");
             }
         }
     }
