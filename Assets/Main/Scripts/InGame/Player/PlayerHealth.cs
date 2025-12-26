@@ -13,6 +13,8 @@ namespace Main.Player
 
         // 値を保持するために static にする
         private static int currentHealth;
+        
+        public static int CurrentHealth => currentHealth;
         private static bool isDead = false;
 
         private float lastDamageTime;
