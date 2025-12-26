@@ -10,7 +10,9 @@ namespace Main.Player
         [Header("スプライト設定")]
         [SerializeField] private Image targetImage;
         [SerializeField] private Sprite normalSprite;
+        [SerializeField] private Vector2 normalSize = new Vector2(100, 100); // 追加
         [SerializeField] private Sprite playbackSprite;
+        [SerializeField] private Vector2 playbackSize = new Vector2(100, 100); // 追加
 
         [Header("テキスト設定")]
         [SerializeField] private TextMeshProUGUI statusText;
@@ -22,10 +24,9 @@ namespace Main.Player
 
         private void Awake()
         {
-            // Rキーで再生UIを切り替えるように設定
+            // キーをEに変更（提示されたコードに合わせました）
             playbackAction = new InputAction(binding: "<Keyboard>/e");
             
-            // 初期状態の反映
             UpdateUI();
         }
 
@@ -49,13 +50,15 @@ namespace Main.Player
 
         private void UpdateUI()
         {
-            // スプライトの切り替え
             if (targetImage != null)
             {
+                // スプライトとサイズを同時に切り替え
                 targetImage.sprite = isPlaying ? playbackSprite : normalSprite;
+                
+                // RectTransformのサイズを更新
+                targetImage.rectTransform.sizeDelta = isPlaying ? playbackSize : normalSize;
             }
 
-            // 文字の切り替え
             if (statusText != null)
             {
                 statusText.text = isPlaying ? playbackString : normalString;
