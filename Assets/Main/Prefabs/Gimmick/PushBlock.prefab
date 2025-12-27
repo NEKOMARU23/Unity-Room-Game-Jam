@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8774728175238807267}
   - component: {fileID: 4232643896264640120}
   - component: {fileID: 5130198431430041734}
+  - component: {fileID: 5840896609959744584}
   m_Layer: 3
   m_Name: PushBlock
   m_TagString: Untagged
@@ -165,3 +166,16 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!114 &5840896609959744584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4964187131891406862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be2369b62a46f9340842a318c6880052, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Main.InGame.Core.RecordableEntity
+  entityId: d2d978c36f244f66b2fc90511f7dc421

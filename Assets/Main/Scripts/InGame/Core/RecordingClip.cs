@@ -26,6 +26,9 @@ namespace Main.InGame.Core
         public readonly byte[] animatorJumpFlags;
         public readonly byte[] animatorAttackFlags;
 
+        // Sprite facing
+        public readonly byte[] spriteFlipXFlags;
+
         // Enemy state
         public readonly byte[] enemyDeadFlags;
 
@@ -44,6 +47,7 @@ namespace Main.InGame.Core
             float[] animatorSpeed,
             byte[] animatorJumpFlags,
             byte[] animatorAttackFlags,
+            byte[] spriteFlipXFlags,
             byte[] enemyDeadFlags)
         {
             if (sampleInterval <= 0f) throw new ArgumentOutOfRangeException(nameof(sampleInterval));
@@ -60,6 +64,8 @@ namespace Main.InGame.Core
             this.animatorSpeed = animatorSpeed ?? Array.Empty<float>();
             this.animatorJumpFlags = animatorJumpFlags ?? Array.Empty<byte>();
             this.animatorAttackFlags = animatorAttackFlags ?? Array.Empty<byte>();
+
+            this.spriteFlipXFlags = spriteFlipXFlags ?? Array.Empty<byte>();
 
             this.enemyDeadFlags = enemyDeadFlags ?? Array.Empty<byte>();
         }
@@ -112,6 +118,12 @@ namespace Main.InGame.Core
         {
             if (animatorAttackFlags == null || animatorAttackFlags.Length == 0) return false;
             return animatorAttackFlags[frameIndex * EntityCount + entityIndex] != 0;
+        }
+
+        public bool GetSpriteFlipX(int frameIndex, int entityIndex)
+        {
+            if (spriteFlipXFlags == null || spriteFlipXFlags.Length == 0) return false;
+            return spriteFlipXFlags[frameIndex * EntityCount + entityIndex] != 0;
         }
 
         public bool GetEnemyDead(int frameIndex, int entityIndex)
