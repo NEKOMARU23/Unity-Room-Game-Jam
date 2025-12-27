@@ -1,64 +1,64 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.InputSystem;
 using TMPro;
+using Main.InGame.Core; // MonochromeChange を参照するため
 
 namespace Main.Player
 {
     public class PlaybackUI : MonoBehaviour
     {
+        [Header("外部参照")]
+        private MonochromeChange _monoChange;
+
         [Header("スプライト設定")]
         [SerializeField] private Image targetImage;
         [SerializeField] private Sprite normalSprite;
+        [SerializeField] private Vector2 normalSize = new Vector2(100, 100);
         [SerializeField] private Sprite playbackSprite;
+        [SerializeField] private Vector2 playbackSize = new Vector2(100, 100);
 
         [Header("テキスト設定")]
         [SerializeField] private TextMeshProUGUI statusText;
         [SerializeField] private string normalString = "READY";
         [SerializeField] private string playbackString = "PLAYING";
 
-        private InputAction playbackAction;
-        private bool isPlaying = false;
+        // 前回の状態を覚えておくための変数（無駄な更新を避けるため）
+        private bool _lastState = false;
 
         private void Awake()
         {
-            // Rキーで再生UIを切り替えるように設定
-            playbackAction = new InputAction(binding: "<Keyboard>/e");
+            _monoChange = FindFirstObjectByType<MonochromeChange>();
             
             // 初期状態の反映
-            UpdateUI();
+            UpdateUI(false);
         }
 
-        private void OnEnable()
+        private void Update()
         {
-            playbackAction.Enable();
-            playbackAction.performed += OnTogglePlaybackUI;
+            if (_monoChange == null) return;
+
+            // MonochromeChange のフラグを直接監視
+            bool currentState = _monoChange.isMonochrome;
+
+            // 状態が変化したときだけUIを更新する
+            if (currentState != _lastState)
+            {
+                _lastState = currentState;
+                UpdateUI(currentState);
+            }
         }
 
-        private void OnDisable()
+        private void UpdateUI(bool isMonochrome)
         {
-            playbackAction.Disable();
-            playbackAction.performed -= OnTogglePlaybackUI;
-        }
-
-        private void OnTogglePlaybackUI(InputAction.CallbackContext context)
-        {
-            isPlaying = !isPlaying;
-            UpdateUI();
-        }
-
-        private void UpdateUI()
-        {
-            // スプライトの切り替え
             if (targetImage != null)
             {
-                targetImage.sprite = isPlaying ? playbackSprite : normalSprite;
+                targetImage.sprite = isMonochrome ? playbackSprite : normalSprite;
+                targetImage.rectTransform.sizeDelta = isMonochrome ? playbackSize : normalSize;
             }
 
-            // 文字の切り替え
             if (statusText != null)
             {
-                statusText.text = isPlaying ? playbackString : normalString;
+                statusText.text = isMonochrome ? playbackString : normalString;
             }
         }
     }

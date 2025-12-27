@@ -9,10 +9,10 @@ namespace Main.Scene
     public enum SceneName
     {
         Title,
-        GameScenes,
+        Stage1_1,
+        Stage1_2,
         StageSelect,
         Clear,
-        //Result,
     }
 
     /// <summary>
