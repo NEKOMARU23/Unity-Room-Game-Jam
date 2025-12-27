@@ -12,6 +12,15 @@ namespace Main.InGame.Core
 
         private readonly List<Vector3> positions = new();
         private readonly List<Quaternion> rotations = new();
+        private readonly List<byte> activeFlags = new();
+        private readonly List<int> animatorStateHashes = new();
+        private readonly List<float> animatorNormalizedTimes = new();
+
+        private readonly List<float> animatorSpeed = new();
+        private readonly List<byte> animatorJumpFlags = new();
+        private readonly List<byte> animatorAttackFlags = new();
+
+        private readonly List<byte> enemyDeadFlags = new();
 
         public int FrameCount { get; private set; }
 
@@ -36,6 +45,37 @@ namespace Main.InGame.Core
                 entities[i].Capture(out var pos, out var rot);
                 positions.Add(pos);
                 rotations.Add(rot);
+
+                // gameplay state (alive/dead etc.)
+                activeFlags.Add(entities[i].gameObject.activeSelf ? (byte)1 : (byte)0);
+
+                // animation state snapshot (layer 0)
+                var animator = entities[i].GetComponent<Animator>();
+                if (animator != null)
+                {
+                    var info = animator.GetCurrentAnimatorStateInfo(0);
+                    animatorStateHashes.Add(info.fullPathHash);
+                    // normalize to 0..1 so it can be safely used with Animator.Play
+                    animatorNormalizedTimes.Add(Mathf.Repeat(info.normalizedTime, 1f));
+
+                    // parameters that actually drive transitions
+                    animatorSpeed.Add(animator.GetFloat("Speed"));
+                    animatorJumpFlags.Add(animator.GetBool("Jump") ? (byte)1 : (byte)0);
+                    animatorAttackFlags.Add(info.IsName("Attack") ? (byte)1 : (byte)0);
+                }
+                else
+                {
+                    animatorStateHashes.Add(0);
+                    animatorNormalizedTimes.Add(0f);
+
+                    animatorSpeed.Add(0f);
+                    animatorJumpFlags.Add(0);
+                    animatorAttackFlags.Add(0);
+                }
+
+                // enemy death (sprite swap etc.)
+                var enemyHealth = entities[i].GetComponent<Main.Enemy.EnemyHealth>();
+                enemyDeadFlags.Add(enemyHealth != null && enemyHealth.IsDead ? (byte)1 : (byte)0);
             }
 
             FrameCount++;
@@ -48,7 +88,14 @@ namespace Main.InGame.Core
                 entityIds,
                 FrameCount,
                 positions.ToArray(),
-                rotations.ToArray());
+                rotations.ToArray(),
+                activeFlags.ToArray(),
+                animatorStateHashes.ToArray(),
+                animatorNormalizedTimes.ToArray(),
+                animatorSpeed.ToArray(),
+                animatorJumpFlags.ToArray(),
+                animatorAttackFlags.ToArray(),
+                enemyDeadFlags.ToArray());
         }
     }
 }

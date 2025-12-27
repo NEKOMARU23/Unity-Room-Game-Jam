@@ -47,6 +47,15 @@ namespace Main.InGame.Core
             builder = null;
         }
 
+        /// <summary>
+        /// 録画状態と直近クリップを破棄します（再生をキャンセルして色付きに戻す用途など）。
+        /// </summary>
+        public void ResetRecording()
+        {
+            builder = null;
+            LastClip = null;
+        }
+
         private void CollectRecordables()
         {
             recordables.Clear();

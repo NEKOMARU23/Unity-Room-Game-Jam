@@ -55,18 +55,27 @@ namespace Main.Player
         {
             if (value.isPressed)
             {
-                if (monochromeChange.isMonochrome == true)
+                // 再生中は「停止してカラーに戻す」
+                if (playbackSystem != null && playbackSystem.IsPlaying)
+                {
+                    playbackSystem.StopPlayback();
+                    if (recordingSystem != null) recordingSystem.ResetRecording();
+                    if (monochromeChange != null) monochromeChange.DisableMono();
+                    return;
+                }
+
+                // 既に白黒だけが有効になっている場合は解除
+                if (monochromeChange != null && monochromeChange.isMonochrome)
                 {
                     monochromeChange.DisableMono();
+                    return;
                 }
-                else
-                {
-                    monochromeChange.EnableMono();
-                    if (playbackSystem != null)
-                    {
-                        playbackSystem.PlayLastClip();
-                    }
-                }
+
+                // 録画があるときだけ白黒＋再生開始
+                if (recordingSystem == null || recordingSystem.LastClip == null) return;
+
+                if (monochromeChange != null) monochromeChange.EnableMono();
+                if (playbackSystem != null) playbackSystem.Play(recordingSystem.LastClip);
             }
         }
 
