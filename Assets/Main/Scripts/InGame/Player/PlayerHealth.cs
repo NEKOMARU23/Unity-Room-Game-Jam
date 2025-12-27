@@ -37,20 +37,20 @@ namespace Main.Player
             }
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
-        {
-            if (isDead) return;
-            if (Time.time < lastDamageTime + damageCooldown) return;
-            if (other.transform.IsChildOf(this.transform)) return;
+        // private void OnTriggerEnter2D(Collider2D other)
+        // {
+        //     if (isDead) return;
+        //     if (Time.time < lastDamageTime + damageCooldown) return;
+        //     if (other.transform.IsChildOf(this.transform)) return;
 
-            if (other.TryGetComponent<DamageSource>(out var source))
-            {
-                if (source.enabled)
-                {
-                    TakeDamage(source.DamageAmount, other.gameObject.name);
-                }
-            }
-        }
+        //     if (other.TryGetComponent<DamageSource>(out var source))
+        //     {
+        //         if (source.enabled)
+        //         {
+        //             TakeDamage(source.DamageAmount, other.gameObject.name);
+        //         }
+        //     }
+        // }
 
         public void TakeDamage(int amount, string sourceName = "Unknown")
         {
