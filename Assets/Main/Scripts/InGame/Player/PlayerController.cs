@@ -84,6 +84,9 @@ namespace Main.Player
         {
             if (value.isPressed)
             {
+                // 再生中（モノクロ）に録画開始/停止されると状態が壊れやすいので無効化
+                if (monochromeChange != null && monochromeChange.isMonochrome) return;
+                if (playbackSystem != null && playbackSystem.IsPlaying) return;
                 ToggleRecording();
             }
         }
