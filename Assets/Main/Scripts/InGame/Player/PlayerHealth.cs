@@ -31,10 +31,6 @@ namespace Main.Player
                 isDead = false;
                 Debug.Log($"<color=cyan>通常プレイ開始: HP {currentHealth}/{maxHealth} にリセット</color>");
             }
-            else
-            {
-                Debug.Log($"<color=yellow>リプレイ中につきHPリセットをスキップ: 現在のHP {currentHealth}</color>");
-            }
         }
 
         // private void OnTriggerEnter2D(Collider2D other)

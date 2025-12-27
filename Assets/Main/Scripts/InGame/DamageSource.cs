@@ -22,11 +22,8 @@ namespace Main.Damage
 
             if (_monoChange == null)
             {
-                Debug.LogError("[DamageSource] MonochromeChange が見つかりません");
-            }
-            else
-            {
-                Debug.Log($"[DamageSource] MonochromeChange 取得成功 (InstanceID={_monoChange.GetInstanceID()})");
+                // 設定ミス防止のため、初期化時のエラーログのみ残しています
+                Debug.LogError($"[DamageSource] {gameObject.name}: MonochromeChange がシーン内に見つかりません。");
             }
         }
 
@@ -36,13 +33,8 @@ namespace Main.Damage
 
             if (!other.CompareTag("Player")) return;
 
-            Debug.Log($"[DamageSource] Player 接触 : {gameObject.name}");
-
-            if (!CanDamage())
-            {
-                Debug.Log("[DamageSource] 無敵条件成立 → ダメージ無効");
-                return;
-            }
+            // 無敵条件（Eキー押下中 または モノクロ世界）なら処理を中断
+            if (!CanDamage()) return;
 
             ExecuteDamage(other);
 
@@ -65,11 +57,7 @@ namespace Main.Damage
                 _monoChange != null &&
                 _monoChange.isMonochrome;
 
-            Debug.Log(
-                $"[DamageSource] 判定状態 => " +
-                $"Eキー={isEPressed}, モノクロ={isWorldMono}"
-            );
-
+            // いずれかの条件を満たしていれば無敵状態（CanDamage = false）
             return !(isEPressed || isWorldMono);
         }
 
@@ -79,18 +67,10 @@ namespace Main.Damage
         private void ExecuteDamage(Collider2D playerCollider)
         {
             var playerHealth = playerCollider.GetComponent<PlayerHealth>();
-            if (playerHealth == null)
+            if (playerHealth != null)
             {
-                Debug.LogWarning("[DamageSource] PlayerHealth が見つかりません");
-                return;
+                playerHealth.TakeDamage(damageAmount, gameObject.name);
             }
-
-            Debug.Log(
-                $"[DamageSource] ダメージ実行 " +
-                $"(量={damageAmount}, 発生源={gameObject.name})"
-            );
-
-            playerHealth.TakeDamage(damageAmount, gameObject.name);
         }
     }
 }
