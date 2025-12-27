@@ -29,24 +29,8 @@ namespace Main.Player
             {
                 currentHealth = maxHealth;
                 isDead = false;
-                Debug.Log($"<color=cyan>通常プレイ開始: HP {currentHealth}/{maxHealth} にリセット</color>");
             }
         }
-
-        // private void OnTriggerEnter2D(Collider2D other)
-        // {
-        //     if (isDead) return;
-        //     if (Time.time < lastDamageTime + damageCooldown) return;
-        //     if (other.transform.IsChildOf(this.transform)) return;
-
-        //     if (other.TryGetComponent<DamageSource>(out var source))
-        //     {
-        //         if (source.enabled)
-        //         {
-        //             TakeDamage(source.DamageAmount, other.gameObject.name);
-        //         }
-        //     }
-        // }
 
         public void TakeDamage(int amount, string sourceName = "Unknown")
         {
@@ -54,9 +38,6 @@ namespace Main.Player
 
             currentHealth -= amount;
             lastDamageTime = Time.time;
-
-            Debug.Log($"<color=red>ダメージ受領!</color> 発生源: {sourceName} | 残りHP: {currentHealth}");
-
             if (currentHealth <= 0)
             {
                 Die();
