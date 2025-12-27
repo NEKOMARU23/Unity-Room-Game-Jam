@@ -11,6 +11,7 @@ namespace Main.Player
         private MonochromeChange monochromeChange;
         private RecordingSystem recordingSystem;
         private RecordingPlaybackSystem playbackSystem;
+        private MonochromeChangeEffect monochromeChangeEffect;
 
         void Awake()
         {
@@ -19,6 +20,7 @@ namespace Main.Player
             monochromeChange = FindAnyObjectByType<MonochromeChange>();
             recordingSystem = FindAnyObjectByType<RecordingSystem>();
             playbackSystem = FindAnyObjectByType<RecordingPlaybackSystem>();
+            monochromeChangeEffect = FindAnyObjectByType<MonochromeChangeEffect>();
         }
 
 
@@ -74,7 +76,12 @@ namespace Main.Player
                 // 録画があるときだけ白黒＋再生開始
                 if (recordingSystem == null || recordingSystem.LastClip == null) return;
 
-                if (monochromeChange != null) monochromeChange.EnableMono();
+
+                if (monochromeChange != null) 
+                {
+                    monochromeChange.EnableMono();
+                    monochromeChangeEffect.rippleScreen.SetActive(true);
+                }
                 if (playbackSystem != null) playbackSystem.Play(recordingSystem.LastClip);
             }
         }
