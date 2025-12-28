@@ -1,5 +1,98 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2505414826045832052
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6325954228793404695}
+  - component: {fileID: 6557113047568872803}
+  - component: {fileID: 7298857432033131842}
+  m_Layer: 0
+  m_Name: AttackArea
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6325954228793404695
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2505414826045832052}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2.2298534, y: 2.2298534, z: 2.2298534}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7372315240648705312}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &6557113047568872803
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2505414826045832052}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0.045257807, y: 0.1238153}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 2.8461528, y: 2.737391}
+  m_EdgeRadius: 0
+--- !u!114 &7298857432033131842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2505414826045832052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6012fef6e736454e9c458a320cd6824, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Main.Damage.DamageSource
+  damageAmount: 1
+  canHitMultipleTimes: 1
 --- !u!1 &6346712007792260258
 GameObject:
   m_ObjectHideFlags: 0
@@ -10,12 +103,12 @@ GameObject:
   m_Component:
   - component: {fileID: 7372315240648705312}
   - component: {fileID: 4043037046219616995}
-  - component: {fileID: 2392401011799204331}
+  - component: {fileID: 6868892531758437215}
   - component: {fileID: 7019140010781931553}
   - component: {fileID: 6182598311704715936}
   - component: {fileID: 841362757652660415}
   - component: {fileID: 2833440647327129482}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -30,11 +123,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6346712007792260258}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 5.9366894, y: 0.65, z: 0}
-  m_LocalScale: {x: 0.44846, y: 0.44846, z: 0.44846}
+  m_LocalScale: {x: 0.5404392, y: 0.5404392, z: 0.49944144}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 6325954228793404695}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4043037046219616995
@@ -86,7 +180,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: bd862f18b69c1b04eb88dcdcfbd7713a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: caf86943c05356047877d3f79c5effa9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -96,8 +190,8 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!58 &2392401011799204331
-CircleCollider2D:
+--- !u!61 &6868892531758437215
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -130,8 +224,18 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.0125137055, y: 0.22499284}
-  m_Radius: 3.54456
+  m_Offset: {x: 0.009438276, y: 0.0049538612}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 10.24, y: 10.24}
+    newSize: {x: 10.24, y: 10.24}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 5.01905, y: 4.5722446}
+  m_EdgeRadius: 0
 --- !u!50 &7019140010781931553
 Rigidbody2D:
   serializedVersion: 5
@@ -171,8 +275,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8467d7073bedd245953348303b8de7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Main.Enemy.EnemyMove
-  moveSpeed: 2
-  moveDistance: 3
+  moveMode: 0
+  moveSpeed: 4
+  moveDistance: 37.5
+  startMovingRight: 0
+  rightSprite: {fileID: 21300000, guid: 92608a73f45cab640b48c96e353afc03, type: 3}
+  leftSprite: {fileID: 21300000, guid: 729bc5fd4d04f1149894093b8f57ebde, type: 3}
+  turnSprite: {fileID: 21300000, guid: caf86943c05356047877d3f79c5effa9, type: 3}
+  turnDelay: 0.2
 --- !u!114 &841362757652660415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,7 +296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Main.Enemy.EnemyHealth
   maxHealth: 1
-  deadSprite: {fileID: 21300000, guid: a492fe914ac820d44b87f4b2e29d0f29, type: 3}
+  deadSprite: {fileID: 21300000, guid: bb1999d70e7989c4584b86df88eb6bd4, type: 3}
   groundLayerName: Ground
 --- !u!114 &2833440647327129482
 MonoBehaviour:
