@@ -29,6 +29,9 @@ namespace Main.Player
         {
             if (anim == null || playerMove == null || spriteRenderer == null) return;
 
+            // 反転は回転で行うため、flipX は常に無効化しておく（アニメーション等で書き換わるのを防ぐ）
+            spriteRenderer.flipX = false;
+
             // 1. 空中にいる間は攻撃トリガーをリセット
             if (!playerMove.IsGrounded())
             {
@@ -52,14 +55,16 @@ namespace Main.Player
         {
             if (attackHitbox == null) return;
 
+            bool isLeft = playerMove.IsFacingLeft;
+
             // 1. まずコライダーが付いているオブジェクトの位置をずらす
-            Vector2 currentOffset = spriteRenderer.flipX ? attackOffsetLeft : attackOffsetRight;
+            Vector2 currentOffset = isLeft ? attackOffsetLeft : attackOffsetRight;
             attackHitbox.transform.localPosition = currentOffset;
 
             // 2. コライダーの向きも反転させる（横長の判定などに対応）
             // オブジェクトのローカルスケールのXを書き換えて向きを合わせる
             Vector3 localScale = attackHitbox.transform.localScale;
-            localScale.x = spriteRenderer.flipX ? -Mathf.Abs(localScale.x) : Mathf.Abs(localScale.x);
+            localScale.x = isLeft ? -Mathf.Abs(localScale.x) : Mathf.Abs(localScale.x);
             attackHitbox.transform.localScale = localScale;
         }
 
@@ -93,8 +98,11 @@ namespace Main.Player
             if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
             if (spriteRenderer == null) return;
 
+            var pm = playerMove != null ? playerMove : GetComponent<PlayerMove>();
+            bool isLeft = pm != null && pm.IsFacingLeft;
+
              Gizmos.color = Color.orange;
-            Vector2 offset = spriteRenderer.flipX ? attackOffsetLeft : attackOffsetRight;
+            Vector2 offset = isLeft ? attackOffsetLeft : attackOffsetRight;
             Vector3 worldPos = transform.position + (Vector3)offset;
 
             Gizmos.DrawWireSphere(worldPos, 0.2f);

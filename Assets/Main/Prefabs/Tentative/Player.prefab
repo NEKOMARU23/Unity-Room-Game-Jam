@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 8754772696437406378}
   - component: {fileID: 8439878090166194726}
   - component: {fileID: 111807701244216943}
+  - component: {fileID: 3586484443674485599}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -275,3 +276,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Main.InGame.Core.RecordableEntity
   entityId: 0858f1cc093a45aea0c07b18eb152cb4
+--- !u!114 &3586484443674485599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2058634006989654429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cde20109ed617b847b72acda81ea6b44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Main.Player.PlayerAttack
+  attackColl: {fileID: 0}
+  damageAmount: 1
