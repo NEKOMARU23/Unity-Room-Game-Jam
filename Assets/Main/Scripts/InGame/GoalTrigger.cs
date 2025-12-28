@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 // 念のため、SceneManagerを直接使うための記述も追加しておきます
 using UnityEngine.SceneManagement;
+using System;
 
 public class GoalTrigger : MonoBehaviour
 {
@@ -25,21 +26,41 @@ public class GoalTrigger : MonoBehaviour
 
         yield return new WaitForSeconds(waitSeconds);
 
-        // --- 修正箇所：フルネームで指定 ---
-        // Main.Scene という名前空間の中にある SceneController を探します
         if (Main.Scene.SceneController.Instance != null)
         {
-            // SceneName.Clear も同様に名前空間付きで指定
-            Main.Scene.SceneController.Instance.LoadScene(Main.Scene.SceneName.Clear);
+            Main.Scene.SceneController.Instance.LoadNextStage();
         }
         else
         {
-            // もしSceneControllerが見つからない場合のバックアップ（直接読み込み）
-            // "Clear" という名前のシーンをビルド設定に入れている場合に動きます
             Debug.LogWarning("SceneControllerが見つからないため、直接シーンを読み込みます");
-            SceneManager.LoadScene("Clear"); 
+
+            string activeScene = SceneManager.GetActiveScene().name;
+            string nextScene = GetNextStageSceneName(activeScene);
+            SceneManager.LoadScene(nextScene);
         }
         
         Debug.Log("ゴールしました！");
+    }
+
+    private static string GetNextStageSceneName(string activeSceneName)
+    {
+        if (!Enum.TryParse(activeSceneName, out Main.Scene.SceneName current))
+        {
+            return Main.Scene.SceneName.Clear.ToString();
+        }
+
+        switch (current)
+        {
+            case Main.Scene.SceneName.Stage1_1:
+                return Main.Scene.SceneName.Stage1_2.ToString();
+            case Main.Scene.SceneName.Stage1_2:
+                return Main.Scene.SceneName.Stage1_3.ToString();
+            case Main.Scene.SceneName.Stage1_3:
+                return Main.Scene.SceneName.Stage1_4.ToString();
+            case Main.Scene.SceneName.Stage1_4:
+                return Main.Scene.SceneName.Clear.ToString();
+            default:
+                return Main.Scene.SceneName.Clear.ToString();
+        }
     }
 }
