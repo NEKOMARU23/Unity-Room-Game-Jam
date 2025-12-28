@@ -16,6 +16,7 @@ namespace Main.InGame.Core
             public Transform transform;
             public Rigidbody2D rb2d;
             public Animator animator;
+            public SpriteRenderer spriteRenderer;
             public Main.Enemy.EnemyHealth enemyHealth;
             public bool wasAttacking;
 
@@ -25,6 +26,9 @@ namespace Main.InGame.Core
             public AnimatorUpdateMode? originalAnimatorUpdateMode;
             public float originalAnimatorSpeed;
             public bool originalAnimatePhysics;
+
+            public bool originalFlipX;
+            public bool hasOriginalFlipX;
         }
 
         private readonly System.Collections.Generic.List<PlaybackTarget> targets = new();
@@ -114,6 +118,11 @@ namespace Main.InGame.Core
                     t.animator.animatePhysics = t.originalAnimatePhysics;
                 }
 
+                if (t.spriteRenderer != null && t.hasOriginalFlipX)
+                {
+                    t.spriteRenderer.flipX = t.originalFlipX;
+                }
+
                 if (t.ownedInstance != null && destroyGhostOnStop)
                 {
                     Destroy(t.ownedInstance);
@@ -159,6 +168,12 @@ namespace Main.InGame.Core
                 {
                     bool shouldBeDead = clip.GetEnemyDead(frameIndex, t.entityIndex);
                     t.enemyHealth.ApplyRecordedDeathState(shouldBeDead);
+                }
+
+                // facing
+                if (t.spriteRenderer != null)
+                {
+                    t.spriteRenderer.flipX = clip.GetSpriteFlipX(frameIndex, t.entityIndex);
                 }
 
                 var pos = clip.GetPosition(frameIndex, t.entityIndex);
@@ -248,6 +263,7 @@ namespace Main.InGame.Core
                     var disabled = DisableMovementBehaviours(ghost);
                     var rb2d = ghost.GetComponent<Rigidbody2D>();
                     var animator = ghost.GetComponent<Animator>();
+                    var spriteRenderer = ghost.GetComponentInChildren<SpriteRenderer>(true);
                     var enemyHealth = ghost.GetComponent<Main.Enemy.EnemyHealth>();
                     RigidbodyType2D? originalBodyType = null;
                     if (rb2d != null)
@@ -276,6 +292,7 @@ namespace Main.InGame.Core
                         transform = ghost.transform,
                         rb2d = rb2d,
                         animator = animator,
+                        spriteRenderer = spriteRenderer,
                         enemyHealth = enemyHealth,
                         ownedInstance = ghost,
                         disabledBehaviours = disabled,
@@ -283,6 +300,8 @@ namespace Main.InGame.Core
                         originalAnimatorUpdateMode = originalUpdateMode,
                         originalAnimatorSpeed = originalAnimSpeed,
                         originalAnimatePhysics = originalAnimatePhysics,
+                        originalFlipX = spriteRenderer != null && spriteRenderer.flipX,
+                        hasOriginalFlipX = spriteRenderer != null,
                     });
                 }
                 else
@@ -291,6 +310,7 @@ namespace Main.InGame.Core
                     var disabled = DisableMovementBehaviours(srcGo);
                     var rb2d = srcGo.GetComponent<Rigidbody2D>();
                     var animator = srcGo.GetComponent<Animator>();
+                    var spriteRenderer = srcGo.GetComponentInChildren<SpriteRenderer>(true);
                     var enemyHealth = srcGo.GetComponent<Main.Enemy.EnemyHealth>();
                     RigidbodyType2D? originalBodyType = null;
                     if (rb2d != null)
@@ -319,6 +339,7 @@ namespace Main.InGame.Core
                         transform = srcGo.transform,
                         rb2d = rb2d,
                         animator = animator,
+                        spriteRenderer = spriteRenderer,
                         enemyHealth = enemyHealth,
                         ownedInstance = null,
                         disabledBehaviours = disabled,
@@ -326,6 +347,8 @@ namespace Main.InGame.Core
                         originalAnimatorUpdateMode = originalUpdateMode,
                         originalAnimatorSpeed = originalAnimSpeed,
                         originalAnimatePhysics = originalAnimatePhysics,
+                        originalFlipX = spriteRenderer != null && spriteRenderer.flipX,
+                        hasOriginalFlipX = spriteRenderer != null,
                     });
                 }
             }

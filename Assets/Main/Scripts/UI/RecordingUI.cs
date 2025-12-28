@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.InputSystem;
 using TMPro; // TextMeshProを使う場合
+using Main.InGame.Core;
 
 namespace Main.Player
 {
@@ -18,36 +18,42 @@ namespace Main.Player
         [SerializeField] private string normalString = "READY";
         [SerializeField] private string recordingString = "REC";
 
-        private InputAction recordAction;
-        private bool isRecording = false;
+        [Header("外部参照")]
+        [SerializeField] private RecordingSystem recordingSystem;
+        [SerializeField] private MonochromeChange monochromeChange;
+
+        private bool lastIsRecording;
+        private bool lastIsMonochrome;
 
         private void Awake()
         {
-            recordAction = new InputAction(binding: "<Keyboard>/q");
-            
+            if (recordingSystem == null) recordingSystem = FindFirstObjectByType<RecordingSystem>();
+            if (monochromeChange == null) monochromeChange = FindFirstObjectByType<MonochromeChange>();
+
             // 初期状態の反映
-            UpdateUI();
+            ForceRefresh();
         }
 
-        private void OnEnable()
+        private void Update()
         {
-            recordAction.Enable();
-            recordAction.performed += OnToggleRecordingUI;
+            bool isMonochrome = monochromeChange != null && monochromeChange.isMonochrome;
+            bool isRecording = !isMonochrome && recordingSystem != null && recordingSystem.IsRecording;
+
+            if (isRecording == lastIsRecording && isMonochrome == lastIsMonochrome) return;
+
+            lastIsRecording = isRecording;
+            lastIsMonochrome = isMonochrome;
+            UpdateUI(isRecording);
         }
 
-        private void OnDisable()
+        private void ForceRefresh()
         {
-            recordAction.Disable();
-            recordAction.performed -= OnToggleRecordingUI;
+            lastIsRecording = false;
+            lastIsMonochrome = false;
+            Update();
         }
 
-        private void OnToggleRecordingUI(InputAction.CallbackContext context)
-        {
-            isRecording = !isRecording;
-            UpdateUI();
-        }
-
-        private void UpdateUI()
+        private void UpdateUI(bool isRecording)
         {
             // スプライトの切り替え
             if (targetImage != null)

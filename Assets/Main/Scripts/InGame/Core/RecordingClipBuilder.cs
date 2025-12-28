@@ -20,6 +20,8 @@ namespace Main.InGame.Core
         private readonly List<byte> animatorJumpFlags = new();
         private readonly List<byte> animatorAttackFlags = new();
 
+        private readonly List<byte> spriteFlipXFlags = new();
+
         private readonly List<byte> enemyDeadFlags = new();
 
         public int FrameCount { get; private set; }
@@ -73,6 +75,10 @@ namespace Main.InGame.Core
                     animatorAttackFlags.Add(0);
                 }
 
+                // sprite facing (flipX)
+                var spriteRenderer = entities[i].GetComponentInChildren<SpriteRenderer>(true);
+                spriteFlipXFlags.Add(spriteRenderer != null && spriteRenderer.flipX ? (byte)1 : (byte)0);
+
                 // enemy death (sprite swap etc.)
                 var enemyHealth = entities[i].GetComponent<Main.Enemy.EnemyHealth>();
                 enemyDeadFlags.Add(enemyHealth != null && enemyHealth.IsDead ? (byte)1 : (byte)0);
@@ -95,6 +101,7 @@ namespace Main.InGame.Core
                 animatorSpeed.ToArray(),
                 animatorJumpFlags.ToArray(),
                 animatorAttackFlags.ToArray(),
+                spriteFlipXFlags.ToArray(),
                 enemyDeadFlags.ToArray());
         }
     }

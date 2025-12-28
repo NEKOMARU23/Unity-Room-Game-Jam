@@ -40,10 +40,12 @@ TagManager:
   - 
   - 
   - 
-  - 
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Body
+    uniqueID: 1877249255
     locked: 0
   m_RenderingLayers:
   - Default

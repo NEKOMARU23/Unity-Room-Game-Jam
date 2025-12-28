@@ -811,6 +811,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Main.Damage.DamageSource
   damageAmount: 1
+  canHitMultipleTimes: 1
 --- !u!1 &5246523987477496522
 GameObject:
   m_ObjectHideFlags: 0
@@ -1595,6 +1596,8 @@ MonoBehaviour:
   statusText: {fileID: 3107626494394530509}
   normalString: READY
   recordingString: REC
+  recordingSystem: {fileID: 0}
+  monochromeChange: {fileID: 0}
 --- !u!1 &7913916319528432501
 GameObject:
   m_ObjectHideFlags: 0
@@ -2276,16 +2279,28 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 8165785844702117596, guid: 563a57e0ff3f61d48abc3b46853861c1, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165785844702117596, guid: 563a57e0ff3f61d48abc3b46853861c1, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165785844702117596, guid: 563a57e0ff3f61d48abc3b46853861c1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -10.3
+      value: -37.81
       objectReference: {fileID: 0}
     - target: {fileID: 8165785844702117596, guid: 563a57e0ff3f61d48abc3b46853861c1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.71
+      value: 1.26
+      objectReference: {fileID: 0}
+    - target: {fileID: 8892046323354137514, guid: 563a57e0ff3f61d48abc3b46853861c1, type: 3}
+      propertyPath: m_Size.x
+      value: 6.5348115
       objectReference: {fileID: 0}
     - target: {fileID: 8892046323354137514, guid: 563a57e0ff3f61d48abc3b46853861c1, type: 3}
       propertyPath: m_Size.y
-      value: 0.34
+      value: 16.162497
       objectReference: {fileID: 0}
     - target: {fileID: 8892046323354137514, guid: 563a57e0ff3f61d48abc3b46853861c1, type: 3}
       propertyPath: m_Material
@@ -2293,11 +2308,11 @@ PrefabInstance:
       objectReference: {fileID: 6200000, guid: ff7915c9047e0834889a6ce26046c5c2, type: 2}
     - target: {fileID: 8892046323354137514, guid: 563a57e0ff3f61d48abc3b46853861c1, type: 3}
       propertyPath: m_Offset.x
-      value: -0.08
+      value: 0.17535527
       objectReference: {fileID: 0}
     - target: {fileID: 8892046323354137514, guid: 563a57e0ff3f61d48abc3b46853861c1, type: 3}
       propertyPath: m_Offset.y
-      value: -0.04
+      value: -0.041971207
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
