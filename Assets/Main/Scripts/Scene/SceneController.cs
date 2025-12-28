@@ -14,6 +14,7 @@ namespace Main.Scene
         Stage1_3,
         Stage1_4,
         StageSelect,
+        GameOver,
         Clear,
     }
 
