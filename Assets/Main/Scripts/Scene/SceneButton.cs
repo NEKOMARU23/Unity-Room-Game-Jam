@@ -38,5 +38,17 @@ namespace Main.Scene
             else
                 Debug.LogError("SceneControllerのインスタンスが見つかりません！Titleシーンにアタッチされているか確認してください。");
         }
+
+        /// <summary>
+        /// GameOver画面などの「リトライ」ボタンから呼び出す
+        /// 最後に遊んでいたステージへ戻る
+        /// </summary>
+        public void OnClickRetry()
+        {
+            if (SceneController.Instance != null)
+                SceneController.Instance.RetryLastStage();
+            else
+                Debug.LogError("SceneControllerのインスタンスが見つかりません！Titleシーンにアタッチされているか確認してください。");
+        }
     }
 }

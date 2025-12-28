@@ -436,7 +436,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 41115130}
         m_TargetAssemblyTypeName: Main.Scene.SceneButton, Assembly-CSharp
-        m_MethodName: OnClick
+        m_MethodName: OnClickRetry
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -496,7 +496,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11abab897062f854d9ae5de1c4aa50f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Main.Scene.SceneButton
-  targetScene: 5
+  targetScene: 7
 --- !u!1 &563236658
 GameObject:
   m_ObjectHideFlags: 0
@@ -1193,7 +1193,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u30B9\u30C6\u30FC\u30B8\u30BB\u30EC\u30AF\u30C8\u306B\u623B\u308B"
+  m_text: "\u30EA\u30C8\u30E9\u30A4"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 513f82bf669266d41b9e772fdda61b1d, type: 2}
   m_sharedMaterial: {fileID: 8516636957866453424, guid: 513f82bf669266d41b9e772fdda61b1d, type: 2}
@@ -1220,7 +1220,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20.1
+  m_fontSize: 20.7
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
