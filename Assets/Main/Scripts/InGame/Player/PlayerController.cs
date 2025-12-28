@@ -20,7 +20,7 @@ namespace Main.Player
             monochromeChange = FindAnyObjectByType<MonochromeChange>();
             recordingSystem = FindAnyObjectByType<RecordingSystem>();
             playbackSystem = FindAnyObjectByType<RecordingPlaybackSystem>();
-            monochromeChangeEffect = FindAnyObjectByType<MonochromeChangeEffect>();
+            monochromeChangeEffect = FindAnyObjectByType<MonochromeChangeEffect>(FindObjectsInactive.Include);
         }
 
 
@@ -80,7 +80,7 @@ namespace Main.Player
                 if (monochromeChange != null) 
                 {
                     monochromeChange.EnableMono();
-                    monochromeChangeEffect.rippleScreen.SetActive(true);
+                    monochromeChangeEffect.gameObject.SetActive(true);
                 }
                 if (playbackSystem != null) playbackSystem.Play(recordingSystem.LastClip);
             }

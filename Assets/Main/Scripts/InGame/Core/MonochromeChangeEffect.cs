@@ -1,57 +1,35 @@
 using System.Collections;
-using NaughtyAttributes;
 using UnityEngine;
 
-public class MonochromeChangeEffect : MonoBehaviour
+namespace Main.InGame.Core
 {
-    [SerializeField] private Material rippleMat;
-    [SerializeField] public GameObject rippleScreen;
-    private float rippleTime;
-    private float disolveWaitSeconds = 1f;
-
-    private bool lastRippleActive;
-    private Coroutine disolveCoroutine;
-
-    private void Awake()
+    public class MonochromeChangeEffect : MonoBehaviour
     {
-        if (rippleScreen != null) rippleScreen.SetActive(false);
-        lastRippleActive = false;
-    }
+        [SerializeField] private Material rippleMat;
+        private float rippleTime;
+        private float disolveWaitSeconds = 1f;
 
-    private void Update()
-    {
-        // rippleScreen が有効化された瞬間に開始する
-        bool rippleActive = rippleScreen != null && rippleScreen.activeInHierarchy;
-        if (rippleActive && !lastRippleActive)
+        private void Awake()
         {
-            BeginRipple();
+            gameObject.SetActive(false);
         }
-        lastRippleActive = rippleActive;
-
-        rippleTime += Time.deltaTime;
-        rippleMat.SetFloat("RippleTime", rippleTime);
-    }
-
-    private void BeginRipple()
-    {
-        rippleTime = 0f;
-
-
-        rippleMat.SetFloat("RippleTime", rippleTime);
-
-        if (disolveCoroutine != null)
+        private void OnEnable()
         {
-            StopCoroutine(disolveCoroutine);
-            disolveCoroutine = null;
+            rippleTime = 0f;
+            rippleMat.SetFloat("_RippleTime", rippleTime);
+            StartCoroutine("DisolveRipple");
         }
 
-        disolveCoroutine = StartCoroutine(DisolveEffect());
-    }
+        private void Update()
+        {
+            rippleTime += Time.deltaTime;
+            rippleMat.SetFloat("_RippleTime", rippleTime);
+        }
 
-    private IEnumerator DisolveEffect()
-    {
-        yield return new WaitForSeconds(disolveWaitSeconds);
-        if (rippleScreen != null) rippleScreen.SetActive(false);
-        disolveCoroutine = null;
+        private IEnumerator DisolveRipple()
+        {
+            yield return new WaitForSeconds(disolveWaitSeconds);
+            gameObject.SetActive(false);
+        }
     }
 }
