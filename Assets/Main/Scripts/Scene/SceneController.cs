@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System;
 
 namespace Main.Scene
 {
@@ -47,15 +48,14 @@ namespace Main.Scene
         /// </summary>
         public void LoadNextStage()
         {
-            // SceneName nextStage = GetNextStage(CurrentStage);
-            // if (nextStage != SceneName.Clear)
-            // {
-            //     LoadScene(nextStage);
-            // }
-            // else
-            // {
-            //     LoadScene(SceneName.Clear);
-            // }
+            var stage = CurrentStage;
+            if (TryGetActiveSceneName(out var activeSceneName))
+            {
+                stage = activeSceneName;
+            }
+
+            SceneName nextStage = GetNextStage(stage);
+            LoadScene(nextStage);
         }
 
         /// <summary>
@@ -63,21 +63,27 @@ namespace Main.Scene
         /// </summary>
         /// <param name="currentStage">現在のステージ</param>
         /// <returns>次のステージ、最後の場合はClear</returns>
-        // private SceneName GetNextStage(SceneName currentStage)
-        // {
-        //     switch (currentStage)
-        //     {
-        //         // case SceneName.Stage1_1:
-        //         //     return SceneName.Stage1_2;
-        //         // case SceneName.Stage1_2:
-        //         //     return SceneName.Stage2_1;
-        //         // case SceneName.Stage2_1:
-        //         //     return SceneName.Stage2_2;
-        //         // case SceneName.Stage2_2:
-        //         //     return SceneName.Clear;
-        //         // default:
-        //         //     return SceneName.Clear;
-        //     }
-        // }
+        private static SceneName GetNextStage(SceneName currentStage)
+        {
+            switch (currentStage)
+            {
+                case SceneName.Stage1_1:
+                    return SceneName.Stage1_2;
+                case SceneName.Stage1_2:
+                    return SceneName.Stage1_3;
+                case SceneName.Stage1_3:
+                    return SceneName.Stage1_4;
+                case SceneName.Stage1_4:
+                    return SceneName.Clear;
+                default:
+                    return SceneName.Clear;
+            }
+        }
+
+        private static bool TryGetActiveSceneName(out SceneName sceneName)
+        {
+            string active = SceneManager.GetActiveScene().name;
+            return Enum.TryParse(active, out sceneName);
+        }
     }
 }
