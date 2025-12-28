@@ -200,13 +200,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1692778553}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 7658556345007773722, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
-    - {fileID: 4665667502948611752, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
-    - {fileID: 8038680100610622369, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
-    - {fileID: 1909304657347763888, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
-    - {fileID: 6457930619584013160, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
-    - {fileID: 1197119886543868193, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
@@ -1573,7 +1567,7 @@ GameObject:
   - component: {fileID: 1918098631}
   - component: {fileID: 1918098630}
   - component: {fileID: 1918098629}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Rock
   m_TagString: Untagged
   m_Icon: {fileID: 0}

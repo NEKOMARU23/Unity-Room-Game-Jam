@@ -276,7 +276,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Main.Enemy.EnemyMove
   moveMode: 0
-  moveSpeed: 4
+  moveSpeed: 2
   moveDistance: 37.5
   startMovingRight: 0
   rightSprite: {fileID: 21300000, guid: 92608a73f45cab640b48c96e353afc03, type: 3}
