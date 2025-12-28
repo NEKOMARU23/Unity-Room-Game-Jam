@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // TextMeshProを使う場合
+using TMPro;
 using Main.InGame.Core;
 
 namespace Main.Player
@@ -13,8 +13,7 @@ namespace Main.Player
         [SerializeField] private Sprite recordingSprite;
 
         [Header("テキスト設定")]
-        [SerializeField] private TextMeshProUGUI statusText; // TextMeshProの場合
-        // [SerializeField] private Text statusTextLegacy; // 標準Textを使う場合はこちら
+        [SerializeField] private TextMeshProUGUI statusText;
         [SerializeField] private string normalString = "READY";
         [SerializeField] private string recordingString = "REC";
 
@@ -22,46 +21,62 @@ namespace Main.Player
         [SerializeField] private RecordingSystem recordingSystem;
         [SerializeField] private MonochromeChange monochromeChange;
 
-        private bool lastIsRecording;
-        private bool lastIsMonochrome;
+        // 初期化が終わったかどうか
+        private bool _isInitialized = false;
+        private bool _lastIsRecording;
+        private bool _lastIsMonochrome;
 
         private void Awake()
         {
             if (recordingSystem == null) recordingSystem = FindFirstObjectByType<RecordingSystem>();
             if (monochromeChange == null) monochromeChange = FindFirstObjectByType<MonochromeChange>();
+        }
 
-            // 初期状態の反映
-            ForceRefresh();
+        private void Start()
+        {
+            // 開始時に強制的に1回更新する
+            RefreshUI();
         }
 
         private void Update()
         {
-            bool isMonochrome = monochromeChange != null && monochromeChange.isMonochrome;
-            bool isRecording = !isMonochrome && recordingSystem != null && recordingSystem.IsRecording;
+            if (monochromeChange == null) return;
 
-            if (isRecording == lastIsRecording && isMonochrome == lastIsMonochrome) return;
+            // 今の状態を取得
+            bool currentMono = monochromeChange.isMonochrome;
+            bool currentRec = (recordingSystem != null) ? recordingSystem.IsRecording : false;
+            
+            // 録画UIが表示されるべき状態（モノクロじゃない、かつ録画中）
+            bool shouldShowRecording = !currentMono && currentRec;
 
-            lastIsRecording = isRecording;
-            lastIsMonochrome = isMonochrome;
-            UpdateUI(isRecording);
+            // 初回、または状態が変わった時だけ更新
+            if (!_isInitialized || shouldShowRecording != _lastIsRecording || currentMono != _lastIsMonochrome)
+            {
+                _isInitialized = true;
+                _lastIsRecording = shouldShowRecording;
+                _lastIsMonochrome = currentMono;
+
+                UpdateUI(shouldShowRecording);
+            }
         }
 
-        private void ForceRefresh()
+        private void RefreshUI()
         {
-            lastIsRecording = false;
-            lastIsMonochrome = false;
-            Update();
+            // 現在の状態に関わらず、一度Updateを通すためのリセット
+            _isInitialized = false;
         }
 
         private void UpdateUI(bool isRecording)
         {
-            // スプライトの切り替え
             if (targetImage != null)
             {
                 targetImage.sprite = isRecording ? recordingSprite : normalSprite;
+                // 透明度を1にする（念のため）
+                Color c = targetImage.color;
+                c.a = 1f;
+                targetImage.color = c;
             }
 
-            // 文字の切り替え
             if (statusText != null)
             {
                 statusText.text = isRecording ? recordingString : normalString;
