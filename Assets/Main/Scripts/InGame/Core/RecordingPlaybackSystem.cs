@@ -8,6 +8,8 @@ namespace Main.InGame.Core
         [SerializeField] private RecordingSystem recordingSystem;
 
         [Header("Playback")]
+        [Tooltip("再生開始までの待機秒数")]
+        [SerializeField] private float playbackStartDelaySeconds = 1.1f;
         [SerializeField] private bool destroyGhostOnStop = true;
 
         private sealed class PlaybackTarget
@@ -37,6 +39,9 @@ namespace Main.InGame.Core
         private int frameIndex;
         private float accumulator;
 
+        // Play() 直後に 1フレーム目を反映し、その状態で一定時間ホールドしてからフレーム進行を開始する
+        private float startHoldRemainingSeconds;
+
         public bool IsPlaying => clip != null;
 
         private void Awake()
@@ -50,6 +55,13 @@ namespace Main.InGame.Core
         private void FixedUpdate()
         {
             if (clip == null) return;
+
+            // 1フレーム目の状態でホールド
+            if (startHoldRemainingSeconds > 0f)
+            {
+                startHoldRemainingSeconds -= Time.fixedDeltaTime;
+                return;
+            }
 
             accumulator += Time.fixedDeltaTime;
             while (accumulator >= clip.sampleInterval)
@@ -73,23 +85,13 @@ namespace Main.InGame.Core
 
             StopPlayback();
 
-            clip = recordingClip;
-            accumulator = 0f;
-            frameIndex = 0;
-
-            BuildTargetsFromScene();
-            if (targets.Count == 0)
-            {
-                StopPlayback();
-                return;
-            }
-
-            // 1フレーム目を即反映
-            ApplyFrame();
+            StartPlaybackNow(recordingClip);
+            startHoldRemainingSeconds = Mathf.Max(0f, playbackStartDelaySeconds);
         }
 
         public void StopPlayback()
         {
+            startHoldRemainingSeconds = 0f;
             clip = null;
             accumulator = 0f;
             frameIndex = 0;
@@ -130,6 +132,28 @@ namespace Main.InGame.Core
             }
 
             targets.Clear();
+        }
+
+        private void StartPlaybackNow(RecordingClip recordingClip)
+        {
+            if (recordingClip == null) return;
+
+            clip = recordingClip;
+            accumulator = 0f;
+            frameIndex = 0;
+
+            BuildTargetsFromScene();
+            if (targets.Count == 0)
+            {
+                clip = null;
+                accumulator = 0f;
+                frameIndex = 0;
+                targets.Clear();
+                return;
+            }
+
+            // 1フレーム目を即反映
+            ApplyFrame();
         }
 
         private void ApplyFrameAndAdvance()
