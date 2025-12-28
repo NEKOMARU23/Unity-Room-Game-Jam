@@ -1510,64 +1510,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7372315240648705312, guid: 5199cb1cb3169da4686675a720ba65d8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4168686046038949177}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6346712007792260258, guid: 5199cb1cb3169da4686675a720ba65d8, type: 3}
-      insertIndex: 2
-      addedObject: {fileID: 3925196592027648508}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5199cb1cb3169da4686675a720ba65d8, type: 3}
 --- !u!4 &1900330638758858661 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7372315240648705312, guid: 5199cb1cb3169da4686675a720ba65d8, type: 3}
   m_PrefabInstance: {fileID: 8939905859418573445}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &2595447717592972839 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6346712007792260258, guid: 5199cb1cb3169da4686675a720ba65d8, type: 3}
-  m_PrefabInstance: {fileID: 8939905859418573445}
-  m_PrefabAsset: {fileID: 0}
---- !u!61 &3925196592027648508
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2595447717592972839}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0.08103609, y: 0.1692344}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 10.24, y: 10.24}
-    newSize: {x: 10.24, y: 10.24}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 6.328986, y: 6.4493103}
-  m_EdgeRadius: 0
