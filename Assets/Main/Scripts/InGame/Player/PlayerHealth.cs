@@ -51,7 +51,7 @@ namespace Main.Player
 
             if (SceneController.Instance != null)
             {
-                SceneController.Instance.LoadScene(SceneName.Clear);
+                SceneController.Instance.LoadScene(SceneName.GameOver);
             }
         }
     }
