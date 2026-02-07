@@ -15,4 +15,4 @@ MonoBehaviour:
   audioDataList:
   - audioName: Title
     audioClip: {fileID: 8300000, guid: 1141f698b8a214f49bd77131de95876f, type: 3}
-    volumeMultiplier: 0
+    volumeMultiplier: 1
