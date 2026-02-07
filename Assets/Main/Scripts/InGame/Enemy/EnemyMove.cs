@@ -3,6 +3,10 @@ using System.Collections;
 
 namespace Main.Enemy
 {
+    /// <summary>
+    /// エネミーの巡回移動を制御するクラス。
+    /// 指定された距離を往復、または片道移動し、方向転換時の演出を管理する。
+    /// </summary>
     public class EnemyMove : MonoBehaviour
     {
         public enum MoveMode { PingPong, OneWay }
@@ -16,97 +20,136 @@ namespace Main.Enemy
         [SerializeField] private bool startMovingRight = true;
 
         [Header("スプライト設定")]
-        [SerializeField] private Sprite rightSprite;  // 右移動中の画像
-        [SerializeField] private Sprite leftSprite;   // 左移動中の画像
-        [SerializeField] private Sprite turnSprite;   // 方向転換時の画像
-        [SerializeField] private float turnDelay = 0.2f; // 方向転換画像を表示する時間
+        [SerializeField] private Sprite rightSprite;
+        [SerializeField] private Sprite leftSprite;
+        [SerializeField] private Sprite turnSprite;
+        [SerializeField] private float turnDelay = 0.2f;
 
         private Vector3 startPosition;
         private bool movingRight;
         private bool isStopped = false;
-        private bool isTurning = false; // 方向転換中フラグ
+        private bool isTurning = false;
         private SpriteRenderer spriteRenderer;
+        private WaitForSeconds turnDelayWait;
 
-        void Awake()
+        private void Awake()
         {
             startPosition = transform.position;
             spriteRenderer = GetComponent<SpriteRenderer>();
             
             movingRight = startMovingRight;
-            UpdateSprite(); // 初期画像の設定
+            
+            InitializeCache();
+            UpdateSprite();
         }
 
-        void Update()
+        private void Update()
         {
-            // 停止中、または方向転換中のアニメーション中は移動しない
-            if (isStopped || isTurning) return; 
+            if (isStopped) return;
+            if (isTurning) return;
 
             HandlePatrol();
         }
 
+        /// <summary>
+        /// 再利用するオブジェクトのキャッシュ初期化
+        /// </summary>
+        private void InitializeCache()
+        {
+            turnDelayWait = new WaitForSeconds(turnDelay);
+        }
+
+        /// <summary>
+        /// 巡回移動の実行と端への到達判定
+        /// </summary>
         private void HandlePatrol()
         {
             float rightEdge = startPosition.x + moveDistance;
             float leftEdge = startPosition.x - moveDistance;
-
             float direction = movingRight ? 1f : -1f;
+
             transform.position += new Vector3(direction * moveSpeed * Time.deltaTime, 0, 0);
 
+            CheckEdgeReached(leftEdge, rightEdge);
+        }
+
+        /// <summary>
+        /// 移動範囲の端に到達したかどうかのチェック
+        /// </summary>
+        private void CheckEdgeReached(float leftEdge, float rightEdge)
+        {
             if (movingRight && transform.position.x >= rightEdge)
             {
                 transform.position = new Vector3(rightEdge, transform.position.y, transform.position.z);
                 HandleReachEdge();
+                return;
             }
-            else if (!movingRight && transform.position.x <= leftEdge)
+            
+            if (!movingRight && transform.position.x <= leftEdge)
             {
                 transform.position = new Vector3(leftEdge, transform.position.y, transform.position.z);
                 HandleReachEdge();
             }
         }
 
+        /// <summary>
+        /// 端に到達した際の振る舞い決定
+        /// </summary>
         private void HandleReachEdge()
         {
-            if (moveMode == MoveMode.PingPong)
-            {
-                // 方向転換コルーチンを開始
-                StartCoroutine(TurnRoutine());
-            }
-            else
+            if (moveMode == MoveMode.OneWay)
             {
                 isStopped = true;
+                return;
             }
+
+            StartCoroutine(TurnRoutine());
         }
 
-        // 方向転換の演出
+        /// <summary>
+        /// 方向転換時の待機演出コルーチン
+        /// </summary>
         private IEnumerator TurnRoutine()
         {
             isTurning = true;
 
-            // 1. 方向転換用の画像を表示
-            if (turnSprite != null) spriteRenderer.sprite = turnSprite;
+            if (turnSprite != null)
+            {
+                spriteRenderer.sprite = turnSprite;
+            }
 
-            // 2. 指定時間待つ（「おっとっと」という感じのタメ）
-            yield return new WaitForSeconds(turnDelay);
+            yield return turnDelayWait;
 
-            // 3. 向きを反転させて、通常移動の画像に戻す
             movingRight = !movingRight;
             UpdateSprite();
 
             isTurning = false;
         }
 
-        // 移動方向に合わせた画像更新
+        /// <summary>
+        /// 現在の進行方向に基づいたスプライトの更新
+        /// </summary>
         private void UpdateSprite()
         {
             if (spriteRenderer == null) return;
 
             if (movingRight)
             {
-                if (rightSprite != null) spriteRenderer.sprite = rightSprite;
+                ApplySprite(rightSprite);
+                return;
             }
-            else
+
+            ApplySprite(leftSprite);
+        }
+
+        /// <summary>
+        /// スプライトの適用
+        /// </summary>
+        private void ApplySprite(Sprite targetSprite)
+        {
+            if (targetSprite != null)
             {
-                if (leftSprite != null) spriteRenderer.sprite = leftSprite;
+                spriteRenderer.sprite = targetSprite;
             }
         }
 
@@ -114,9 +157,14 @@ namespace Main.Enemy
         {
             Vector3 center = Application.isPlaying ? startPosition : transform.position;
             Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(center + Vector3.left * moveDistance, center + Vector3.right * moveDistance);
-            Gizmos.DrawWireCube(center + Vector3.left * moveDistance, new Vector3(0.1f, 0.5f, 0));
-            Gizmos.DrawWireCube(center + Vector3.right * moveDistance, new Vector3(0.1f, 0.5f, 0));
+            
+            Vector3 leftPoint = center + Vector3.left * moveDistance;
+            Vector3 rightPoint = center + Vector3.right * moveDistance;
+            Vector3 markerSize = new Vector3(0.1f, 0.5f, 0);
+
+            Gizmos.DrawLine(leftPoint, rightPoint);
+            Gizmos.DrawWireCube(leftPoint, markerSize);
+            Gizmos.DrawWireCube(rightPoint, markerSize);
         }
     }
 }
