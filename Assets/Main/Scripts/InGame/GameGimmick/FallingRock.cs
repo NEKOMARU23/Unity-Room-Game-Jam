@@ -1,79 +1,103 @@
 using UnityEngine;
 using System.Collections;
 
-namespace Main.Gimmick
+namespace Main.InGame.GameGimmick
 {
+    /// <summary>
+    /// 一定間隔で出現・落下・消滅を繰り返す落石オブジェクトの挙動を制御する
+    /// </summary>
     public class FallingRock : MonoBehaviour
     {
         [Header("サイクル設定")]
-        [SerializeField] private float activeDuration = 5.0f;  // 出現してから消えるまでの時間
-        [SerializeField] private float respawnDelay = 2.0f;   // 消えてから再出現するまでの待ち時間
+        [SerializeField] private float activeDuration = 5.0f;
+        [SerializeField] private float respawnDelay = 2.0f;
 
-        private Vector3 _startPosition;
-        private Quaternion _startRotation;
-        private Rigidbody2D _rb;
-        private SpriteRenderer _renderer;
-        private Collider2D _collider;
+        private Vector3 startPosition;
+        private Quaternion startRotation;
+        private Rigidbody2D rb;
+        private SpriteRenderer spriteRenderer;
+        private Collider2D rockCollider;
+
+        private WaitForSeconds activeDurationWait;
+        private WaitForSeconds respawnDelayWait;
 
         private void Awake()
         {
-            _rb = GetComponent<Rigidbody2D>();
-            _renderer = GetComponent<SpriteRenderer>();
-            _collider = GetComponent<Collider2D>();
+            rb = GetComponent<Rigidbody2D>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            rockCollider = GetComponent<Collider2D>();
 
-            // 最初の位置と回転を記録
-            _startPosition = transform.position;
-            _startRotation = transform.rotation;
+            startPosition = transform.position;
+            startRotation = transform.rotation;
+
+            InitializeCache();
         }
 
         private void Start()
         {
-            // 最初のサイクルを開始
             StartCoroutine(RockCycle());
         }
 
+        /// <summary>
+        /// 再利用するオブジェクトのキャッシュ初期化
+        /// </summary>
+        private void InitializeCache()
+        {
+            activeDurationWait = new WaitForSeconds(activeDuration);
+            respawnDelayWait = new WaitForSeconds(respawnDelay);
+        }
+
+        /// <summary>
+        /// 出現、待機、消滅のループサイクルを管理する
+        /// </summary>
         private IEnumerator RockCycle()
         {
             while (true)
             {
-                // 1. 出現（初期位置に戻して物理をリセット）
-                ResetRock();
+                ResetRockState();
                 SetAppearance(true);
 
-                // 2. 一定時間待機（落下している時間）
-                yield return new WaitForSeconds(activeDuration);
+                yield return activeDurationWait;
 
-                // 3. 消滅
                 SetAppearance(false);
 
-                // 4. 再出現までの待ち時間
-                yield return new WaitForSeconds(respawnDelay);
+                yield return respawnDelayWait;
             }
         }
 
-        private void ResetRock()
+        /// <summary>
+        /// 岩の位置、回転、物理速度を初期状態に戻す
+        /// </summary>
+        private void ResetRockState()
         {
-            // 位置と回転を戻す
-            transform.position = _startPosition;
-            transform.rotation = _startRotation;
+            transform.position = startPosition;
+            transform.rotation = startRotation;
 
-            // 物理挙動（速度や回転）を完全にゼロにする
-            if (_rb != null)
+            if (rb != null)
             {
-                _rb.linearVelocity = Vector2.zero;
-                _rb.angularVelocity = 0f;
+                rb.linearVelocity = Vector2.zero;
+                rb.angularVelocity = 0f;
             }
         }
 
+        /// <summary>
+        /// 描画、当たり判定、物理シミュレーションの有効状態を切り替える
+        /// </summary>
         private void SetAppearance(bool isVisible)
         {
-            if (_renderer != null) _renderer.enabled = isVisible;
-            if (_collider != null) _collider.enabled = isVisible;
-            
-            // 物理演算を止める/動かす
-            if (_rb != null)
+            if (spriteRenderer != null)
             {
-                _rb.simulated = isVisible;
+                spriteRenderer.enabled = isVisible;
+            }
+
+            if (rockCollider != null)
+            {
+                rockCollider.enabled = isVisible;
+            }
+
+            if (rb != null)
+            {
+                rb.simulated = isVisible;
             }
         }
     }
