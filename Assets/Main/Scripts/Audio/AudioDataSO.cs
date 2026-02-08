@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MainS.Audio
+namespace Main.Audio
 {
     [System.Serializable]
     public class AudioData

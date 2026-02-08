@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: AudioData
   m_EditorClassIdentifier: Assembly-CSharp::MainS.Audio.AudioDataSO
   audioDataList:
-  - audioName: Title
+  - audioName: hidamari
     audioClip: {fileID: 8300000, guid: 1141f698b8a214f49bd77131de95876f, type: 3}
     volumeMultiplier: 1
