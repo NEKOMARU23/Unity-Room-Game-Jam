@@ -271,6 +271,7 @@ namespace Main.InGame.Core
                     // プレイヤーは複製してゴーストを動かす
                     var ghost = Instantiate(srcGo, srcGo.transform.position, srcGo.transform.rotation);
                     ghost.name = srcGo.name + "_Ghost";
+                    ghost.transform.localScale = new Vector3(0.2f, 0.2f, 1f);
                     // Playerタグのままだと、他の処理（FindWithTag/Trigger判定など）がゴーストをプレイヤー扱いしてしまう
                     ghost.tag = "Untagged";
                     ghost.gameObject.layer = LayerMask.NameToLayer("Player_Recorded");
