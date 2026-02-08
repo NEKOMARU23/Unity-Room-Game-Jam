@@ -263,8 +263,8 @@ namespace Main.InGame.Core
                 if (srcGo == null) continue;
 
                 bool isPlayer = srcGo.CompareTag("Player") ||
-                                srcGo.GetComponent<Main.Player.PlayerMove>() != null ||
-                                srcGo.GetComponent<Main.Player.PlayerController>() != null;
+                                srcGo.GetComponent<Main.InGame.Player.PlayerMove>() != null ||
+                                srcGo.GetComponent<Main.InGame.Player.PlayerController>() != null;
 
                 if (isPlayer)
                 {
@@ -382,14 +382,14 @@ namespace Main.InGame.Core
         {
             var list = new System.Collections.Generic.List<Behaviour>(4);
 
-            var playerController = go.GetComponent<Main.Player.PlayerController>();
+            var playerController = go.GetComponent<Main.InGame.Player.PlayerController>();
             if (playerController != null && playerController.enabled)
             {
                 playerController.enabled = false;
                 list.Add(playerController);
             }
 
-            var playerMove = go.GetComponent<Main.Player.PlayerMove>();
+            var playerMove = go.GetComponent<Main.InGame.Player.PlayerMove>();
             if (playerMove != null && playerMove.enabled)
             {
                 playerMove.enabled = false;
@@ -397,7 +397,7 @@ namespace Main.InGame.Core
             }
 
             // 再生中はAnimatorを直接駆動するので、PlayerAnimationの自動更新は止める
-            var playerAnim = go.GetComponent<Main.Player.PlayerAnimation>();
+            var playerAnim = go.GetComponent<Main.InGame.Player.PlayerAnimation>();
             if (playerAnim != null && playerAnim.enabled)
             {
                 playerAnim.enabled = false;

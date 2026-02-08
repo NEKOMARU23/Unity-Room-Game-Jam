@@ -2,7 +2,7 @@ using UnityEngine;
 using Main.Scene;
 using Main.InGame.Core;
 
-namespace Main.Player
+namespace Main.InGame.Player
 {
     public class PlayerHealth : MonoBehaviour
     {

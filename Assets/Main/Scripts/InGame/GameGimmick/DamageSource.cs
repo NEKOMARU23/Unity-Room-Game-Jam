@@ -1,6 +1,6 @@
 using UnityEngine;
 using Main.InGame.Core;
-using Main.Player;
+using Main.InGame.Player;
 using UnityEngine.InputSystem;
 
 namespace Main.InGame.GameGimmick

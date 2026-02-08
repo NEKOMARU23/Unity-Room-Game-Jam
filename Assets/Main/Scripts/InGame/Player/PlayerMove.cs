@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Main.Player
+namespace Main.InGame.Player
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(SpriteRenderer))]

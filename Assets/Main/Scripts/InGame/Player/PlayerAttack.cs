@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Main.Enemy;
 
-namespace Main.Player
+namespace Main.InGame.Player
 {
     public class PlayerAttack : MonoBehaviour
     {

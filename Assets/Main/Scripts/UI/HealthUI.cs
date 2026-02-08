@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using Main.InGame.Player;
 
-namespace Main.Player
+namespace Main.InGame.UI
 {
     public class HealthUI : MonoBehaviour
     {

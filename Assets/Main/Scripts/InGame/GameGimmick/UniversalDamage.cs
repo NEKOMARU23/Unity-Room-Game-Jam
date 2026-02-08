@@ -1,5 +1,5 @@
 using UnityEngine;
-using Main.Player;
+using Main.InGame.Player;
 
 namespace Main.InGame.GameGimmick
 {
