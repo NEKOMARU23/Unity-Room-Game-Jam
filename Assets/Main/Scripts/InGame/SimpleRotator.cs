@@ -1,12 +1,17 @@
 using UnityEngine;
 
-public class SimpleRotator : MonoBehaviour
+namespace Main.InGame
 {
-    [SerializeField] private float rotationSpeed = 100f; // 1秒間の回転角度
-
-    void Update()
+    /// <summary>
+    /// オブジェクトを一定速度で回転させるシンプルなコンポーネント。
+    /// </summary>
+    public class SimpleRotator : MonoBehaviour
     {
-        // 自機（Z軸）を中心に回転させる
-        transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
+        [SerializeField] private float rotationSpeed = 100f; // 1秒間の回転角度
+
+        void Update()
+        {
+            transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
+        }
     }
 }

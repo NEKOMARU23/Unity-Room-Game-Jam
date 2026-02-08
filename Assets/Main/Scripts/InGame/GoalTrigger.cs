@@ -1,66 +1,65 @@
 using UnityEngine;
 using System.Collections;
-// 念のため、SceneManagerを直接使うための記述も追加しておきます
 using UnityEngine.SceneManagement;
 using System;
 
-public class GoalTrigger : MonoBehaviour
+namespace Main.InGame
 {
-    [SerializeField] private string goalSeName = "GoalSE";
-    [SerializeField] private float waitSeconds = 0.2f;
-    private bool cleared = false;
-
-    private void OnTriggerEnter2D(Collider2D other)
+    /// <summary>
+    /// ゴール地点のトリガー処理を管理するクラス
+    /// </summary>
+    public class GoalTrigger : MonoBehaviour
     {
-        if (cleared) return;
-        if (!other.CompareTag("Player")) return;
+        [SerializeField] private string goalSeName = "GoalSE";
+        [SerializeField] private float waitSeconds = 0.2f;
+        private bool cleared = false;
 
-        cleared = true;
-        StartCoroutine(PlaySeAndLoad());
-    }
-
-    private IEnumerator PlaySeAndLoad()
-    {
-        // SE再生待ち（必要ならコメントを外す）
-        // if (AudioManager.Instance != null) AudioManager.Instance.Play(goalSeName);
-
-        yield return new WaitForSeconds(waitSeconds);
-
-        if (Main.Scene.SceneController.Instance != null)
+        private void OnTriggerEnter2D(Collider2D other)
         {
-            Main.Scene.SceneController.Instance.LoadNextStage();
-        }
-        else
-        {
-            Debug.LogWarning("SceneControllerが見つからないため、直接シーンを読み込みます");
+            if (cleared) return;
+            if (!other.CompareTag("Player")) return;
 
-            string activeScene = SceneManager.GetActiveScene().name;
-            string nextScene = GetNextStageSceneName(activeScene);
-            SceneManager.LoadScene(nextScene);
-        }
-        
-        Debug.Log("ゴールしました！");
-    }
-
-    private static string GetNextStageSceneName(string activeSceneName)
-    {
-        if (!Enum.TryParse(activeSceneName, out Main.Scene.SceneName current))
-        {
-            return Main.Scene.SceneName.Clear.ToString();
+            cleared = true;
+            StartCoroutine(PlaySeAndLoad());
         }
 
-        switch (current)
+        private IEnumerator PlaySeAndLoad()
         {
-            case Main.Scene.SceneName.Stage1_1:
-                return Main.Scene.SceneName.Stage1_2.ToString();
-            case Main.Scene.SceneName.Stage1_2:
-                return Main.Scene.SceneName.Stage1_3.ToString();
-            case Main.Scene.SceneName.Stage1_3:
-                return Main.Scene.SceneName.Stage1_4.ToString();
-            case Main.Scene.SceneName.Stage1_4:
-                return Main.Scene.SceneName.Clear.ToString();
-            default:
-                return Main.Scene.SceneName.Clear.ToString();
+
+            yield return new WaitForSeconds(waitSeconds);
+
+            if (Scene.SceneController.Instance != null)
+            {
+                Scene.SceneController.Instance.LoadNextStage();
+            }
+            else
+            {
+                string activeScene = SceneManager.GetActiveScene().name;
+                string nextScene = GetNextStageSceneName(activeScene);
+                SceneManager.LoadScene(nextScene);
+            }
+        }
+
+        private static string GetNextStageSceneName(string activeSceneName)
+        {
+            if (!Enum.TryParse(activeSceneName, out Scene.SceneName current))
+            {
+                return Scene.SceneName.Clear.ToString();
+            }
+
+            switch (current)
+            {
+                case Scene.SceneName.Stage1_1:
+                    return Scene.SceneName.Stage1_2.ToString();
+                case Scene.SceneName.Stage1_2:
+                    return Scene.SceneName.Stage1_3.ToString();
+                case Scene.SceneName.Stage1_3:
+                    return Scene.SceneName.Stage1_4.ToString();
+                case Scene.SceneName.Stage1_4:
+                    return Scene.SceneName.Clear.ToString();
+                default:
+                    return Scene.SceneName.Clear.ToString();
+            }
         }
     }
 }
