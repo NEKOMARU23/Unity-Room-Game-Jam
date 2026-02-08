@@ -1133,6 +1133,10 @@ PrefabInstance:
       propertyPath: deadSprite
       value: 
       objectReference: {fileID: 21300000, guid: bb1999d70e7989c4584b86df88eb6bd4, type: 3}
+    - target: {fileID: 8661741002963436567, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: ff7915c9047e0834889a6ce26046c5c2, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 1909304657347763888, guid: a837fc2cd3ca92f41be6b162c44c7e98, type: 3}
@@ -1678,19 +1682,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8318345725040546371, guid: f7b4ac00d2cba9048847213477fff91a, type: 3}
       propertyPath: m_Anchor.x
-      value: 0
+      value: -0.31003296
       objectReference: {fileID: 0}
     - target: {fileID: 8318345725040546371, guid: f7b4ac00d2cba9048847213477fff91a, type: 3}
       propertyPath: m_Anchor.y
-      value: 0
+      value: -0.0975543
       objectReference: {fileID: 0}
     - target: {fileID: 8318345725040546371, guid: f7b4ac00d2cba9048847213477fff91a, type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: -10.05
+      value: -11.125814
       objectReference: {fileID: 0}
     - target: {fileID: 8318345725040546371, guid: f7b4ac00d2cba9048847213477fff91a, type: 3}
       propertyPath: m_ConnectedAnchor.y
-      value: 1.77
+      value: 1.699998
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1708,6 +1712,22 @@ PrefabInstance:
     - target: {fileID: 807017384171045906, guid: a754c611b0f44934b9215255a55d70f9, type: 3}
       propertyPath: m_Name
       value: RockFall
+      objectReference: {fileID: 0}
+    - target: {fileID: 1786533630761748187, guid: a754c611b0f44934b9215255a55d70f9, type: 3}
+      propertyPath: m_Size.x
+      value: 2.4120579
+      objectReference: {fileID: 0}
+    - target: {fileID: 1786533630761748187, guid: a754c611b0f44934b9215255a55d70f9, type: 3}
+      propertyPath: m_Size.y
+      value: 3.6427279
+      objectReference: {fileID: 0}
+    - target: {fileID: 1786533630761748187, guid: a754c611b0f44934b9215255a55d70f9, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.032458305
+      objectReference: {fileID: 0}
+    - target: {fileID: 1786533630761748187, guid: a754c611b0f44934b9215255a55d70f9, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.023460153
       objectReference: {fileID: 0}
     - target: {fileID: 3208090430026295904, guid: a754c611b0f44934b9215255a55d70f9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1748,6 +1768,10 @@ PrefabInstance:
     - target: {fileID: 3208090430026295904, guid: a754c611b0f44934b9215255a55d70f9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3451820110596728412, guid: a754c611b0f44934b9215255a55d70f9, type: 3}
+      propertyPath: canHitMultipleTimes
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
