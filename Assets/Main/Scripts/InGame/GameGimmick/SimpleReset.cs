@@ -1,16 +1,52 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // シーン管理用
-using UnityEngine.InputSystem;    // Input System用
+using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
-public class SimpleReset : MonoBehaviour
+namespace Main.InGame.GameGimmick
 {
-    void Update()
+    /// <summary>
+    /// キー入力によるシーンのリセット機能を管理するクラス
+    /// </summary>
+    public class SimpleReset : MonoBehaviour
     {
-        // Rキーが押された瞬間だけ判定
-        if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
+        private Keyboard currentKeyboard;
+
+        private void Awake()
         {
-            // 今開いているシーンを最初からロードし直す
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            InitializeCache();
+        }
+
+        private void Update()
+        {
+            HandleResetInput();
+        }
+
+        /// <summary>
+        /// 使用するコンポーネントやデバイスの参照をキャッシュする
+        /// </summary>
+        private void InitializeCache()
+        {
+            currentKeyboard = Keyboard.current;
+        }
+
+        /// <summary>
+        /// リセット入力の検知およびシーンの再読み込みを実行する
+        /// </summary>
+        private void HandleResetInput()
+        {
+            if (currentKeyboard == null) return;
+            if (!currentKeyboard.rKey.wasPressedThisFrame) return;
+
+            ResetCurrentScene();
+        }
+
+        /// <summary>
+        /// 現在アクティブなシーンを再読み込みする
+        /// </summary>
+        private void ResetCurrentScene()
+        {
+            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+            SceneManager.LoadScene(currentSceneIndex);
         }
     }
 }
