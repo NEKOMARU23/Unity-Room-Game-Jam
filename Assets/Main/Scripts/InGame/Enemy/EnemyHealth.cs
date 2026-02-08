@@ -1,5 +1,5 @@
 using UnityEngine;
-using Main.Damage;
+using Main.InGame.GameGimmick;
 
 namespace Main.Enemy
 {
