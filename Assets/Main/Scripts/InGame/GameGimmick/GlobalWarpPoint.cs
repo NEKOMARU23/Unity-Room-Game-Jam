@@ -1,8 +1,10 @@
 using UnityEngine;
-using System.Collections;
 
-namespace Main.Gimmick
+namespace Main.InGame.GameGimmick
 {
+    /// <summary>
+    /// 全インスタンスで共通のクールタイムを持つワープポイントを制御するクラス
+    /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public class GlobalWarpPoint : MonoBehaviour
     {
@@ -14,40 +16,68 @@ namespace Main.Gimmick
         [SerializeField] private bool maintainVelocity = false;
         [SerializeField] private ParticleSystem warpEffect;
 
-        // ★ 全てのインスタンスで共有される「次のワープ可能時刻」
-        private static float _nextWarpAllowedTime = 0f;
+        private const string PLAYER_TAG = "Player";
+
+        private static float nextWarpAllowedTime = 0f;
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            // 現在の時間が、許可された時刻を過ぎているかチェック
-            if (other.CompareTag("Player") && Time.time >= _nextWarpAllowedTime)
-            {
-                PerformWarp(other.gameObject);
-            }
+            if (!other.CompareTag(PLAYER_TAG)) return;
+            if (Time.time < nextWarpAllowedTime) return;
+
+            PerformWarp(other.gameObject);
         }
 
+        /// <summary>
+        /// プレイヤーを目標地点へ転送し、クールタイムを更新する
+        /// </summary>
         private void PerformWarp(GameObject player)
         {
             if (targetLocation == null) return;
 
-            // 1. 次にワープできる時間を「全ワープ共通」で更新
-            _nextWarpAllowedTime = Time.time + globalCooldownTime;
+            UpdateGlobalCooldown();
+            ApplyWarpPosition(player);
+            ApplyPhysicsCorrection(player);
+            PlayWarpEffect();
+        }
 
-            // 2. 位置の移動
+        /// <summary>
+        /// 全ワープポイント共通のクールタイムを更新する
+        /// </summary>
+        private void UpdateGlobalCooldown()
+        {
+            nextWarpAllowedTime = Time.time + globalCooldownTime;
+        }
+
+        /// <summary>
+        /// プレイヤーの座標を目標地点へ移動させる
+        /// </summary>
+        private void ApplyWarpPosition(GameObject player)
+        {
             player.transform.position = targetLocation.position;
+        }
 
-            // 3. 物理挙動の補正
-            var rb = player.GetComponent<Rigidbody2D>();
-            if (rb != null && !maintainVelocity)
+        /// <summary>
+        /// 設定に基づきプレイヤーの物理速度を補正する
+        /// </summary>
+        private void ApplyPhysicsCorrection(GameObject player)
+        {
+            if (maintainVelocity) return;
+
+            if (player.TryGetComponent<Rigidbody2D>(out var rb))
             {
                 rb.linearVelocity = Vector2.zero;
             }
+        }
 
-            // 4. エフェクト
-            if (warpEffect != null)
-            {
-                Instantiate(warpEffect, targetLocation.position, Quaternion.identity);
-            }
+        /// <summary>
+        /// ワープ先の地点でエフェクトを生成する
+        /// </summary>
+        private void PlayWarpEffect()
+        {
+            if (warpEffect == null) return;
+
+            Instantiate(warpEffect, targetLocation.position, Quaternion.identity);
         }
     }
 }
