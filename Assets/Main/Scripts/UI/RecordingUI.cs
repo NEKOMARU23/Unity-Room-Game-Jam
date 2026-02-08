@@ -3,8 +3,12 @@ using UnityEngine.UI;
 using TMPro;
 using Main.InGame.Core;
 
-namespace Main.Player
+namespace Main.InGame.UI
 {
+    /// <summary>
+    /// 録画システムの状態を監視し、録画中（REC）と待機中（READY）の表示を切り替える。
+    /// モノクロ状態（再生中）の場合は表示を更新しない。
+    /// </summary>
     public class RecordingUI : MonoBehaviour
     {
         [Header("スプライト設定")]
@@ -21,20 +25,17 @@ namespace Main.Player
         [SerializeField] private RecordingSystem recordingSystem;
         [SerializeField] private MonochromeChange monochromeChange;
 
-        // 初期化が終わったかどうか
-        private bool _isInitialized = false;
-        private bool _lastIsRecording;
-        private bool _lastIsMonochrome;
+        private bool isInitialized;
+        private bool lastIsRecording;
+        private bool lastIsMonochrome;
 
         private void Awake()
         {
-            if (recordingSystem == null) recordingSystem = FindFirstObjectByType<RecordingSystem>();
-            if (monochromeChange == null) monochromeChange = FindFirstObjectByType<MonochromeChange>();
+            InitializeReferences();
         }
 
         private void Start()
         {
-            // 開始時に強制的に1回更新する
             RefreshUI();
         }
 
@@ -42,45 +43,83 @@ namespace Main.Player
         {
             if (monochromeChange == null) return;
 
-            // 今の状態を取得
+            UpdateUIState();
+        }
+
+        /// <summary>
+        /// 必要な参照をキャッシュする
+        /// </summary>
+        private void InitializeReferences()
+        {
+            if (recordingSystem == null)
+            {
+                recordingSystem = FindFirstObjectByType<RecordingSystem>();
+            }
+
+            if (monochromeChange == null)
+            {
+                monochromeChange = FindFirstObjectByType<MonochromeChange>();
+            }
+        }
+
+        /// <summary>
+        /// 現在の状態を監視し、変化があった場合のみUIを更新する
+        /// </summary>
+        private void UpdateUIState()
+        {
             bool currentMono = monochromeChange.isMonochrome;
-            bool currentRec = (recordingSystem != null) ? recordingSystem.IsRecording : false;
-            
-            // 録画UIが表示されるべき状態（モノクロじゃない、かつ録画中）
+            bool currentRec = recordingSystem != null && recordingSystem.IsRecording;
             bool shouldShowRecording = !currentMono && currentRec;
 
-            // 初回、または状態が変わった時だけ更新
-            if (!_isInitialized || shouldShowRecording != _lastIsRecording || currentMono != _lastIsMonochrome)
-            {
-                _isInitialized = true;
-                _lastIsRecording = shouldShowRecording;
-                _lastIsMonochrome = currentMono;
+            // 状態が変化していない場合は処理をスキップ
+            if (isInitialized && 
+                shouldShowRecording == lastIsRecording && 
+                currentMono == lastIsMonochrome) return;
 
-                UpdateUI(shouldShowRecording);
-            }
+            ApplyState(shouldShowRecording, currentMono);
+        }
+
+        /// <summary>
+        /// 内部状態を記録し、実際の表示に反映する
+        /// </summary>
+        private void ApplyState(bool shouldShowRecording, bool currentMono)
+        {
+            isInitialized = true;
+            lastIsRecording = shouldShowRecording;
+            lastIsMonochrome = currentMono;
+
+            UpdateVisuals(shouldShowRecording);
         }
 
         private void RefreshUI()
         {
-            // 現在の状態に関わらず、一度Updateを通すためのリセット
-            _isInitialized = false;
+            isInitialized = false;
         }
 
-        private void UpdateUI(bool isRecording)
+        /// <summary>
+        /// スプライト、カラー、テキストの表示を切り替える
+        /// </summary>
+        private void UpdateVisuals(bool isRecording)
         {
             if (targetImage != null)
             {
                 targetImage.sprite = isRecording ? recordingSprite : normalSprite;
-                // 透明度を1にする（念のため）
-                Color c = targetImage.color;
-                c.a = 1f;
-                targetImage.color = c;
+                SetImageAlpha(1f);
             }
 
             if (statusText != null)
             {
                 statusText.text = isRecording ? recordingString : normalString;
             }
+        }
+
+        private void SetImageAlpha(float alpha)
+        {
+            if (targetImage == null) return;
+
+            Color color = targetImage.color;
+            color.a = alpha;
+            targetImage.color = color;
         }
     }
 }
