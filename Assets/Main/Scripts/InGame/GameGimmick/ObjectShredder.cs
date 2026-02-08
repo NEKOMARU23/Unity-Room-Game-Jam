@@ -1,28 +1,49 @@
 using UnityEngine;
 
-public class ObjectShredder : MonoBehaviour
+namespace Main.InGame.GameGimmick
 {
-    // 特定のタグ（例：PlayerやEnemy）だけを消したい場合に設定
-    [SerializeField] private string targetTag = "Enemy";
-
-
-    private void OnTriggerEnter2D(Collider2D collision)
+    /// <summary>
+    /// 接触したオブジェクトを消去するギミック。
+    /// 特定のタグを持つオブジェクト、またはすべてのオブジェクトを対象に削除を実行する。
+    /// </summary>
+    [RequireComponent(typeof(Collider2D))]
+    public class ObjectShredder : MonoBehaviour
     {
-        // もし targetTag が空なら、触れたもの全てを消す
-        // 特定のタグが設定されているなら、そのタグを持つものだけを消す
-        if (string.IsNullOrEmpty(targetTag) || collision.CompareTag(targetTag))
+        [SerializeField] private string targetTag = "Enemy";
+
+        private void OnTriggerEnter2D(Collider2D collision)
         {
-            Debug.Log($"{collision.gameObject.name} をデストロイしました");
-            Destroy(collision.gameObject);
+            if (!IsShreddable(collision.gameObject)) return;
+
+            Shred(collision.gameObject);
         }
-    }
 
-    // 物理衝突（Is Triggerオフ）で消したい場合はこちら
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (string.IsNullOrEmpty(targetTag) || collision.gameObject.CompareTag(targetTag))
+        private void OnCollisionEnter2D(Collision2D collision)
         {
-            Destroy(collision.gameObject);
+            if (!IsShreddable(collision.gameObject)) return;
+
+            Shred(collision.gameObject);
+        }
+
+        /// <summary>
+        /// 対象のオブジェクトが削除可能（タグ条件に合致）かどうかを判定する
+        /// </summary>
+        private bool IsShreddable(GameObject target)
+        {
+            if (string.IsNullOrEmpty(targetTag))
+            {
+                return true;
+            }
+
+            return target.CompareTag(targetTag);
+        }
+
+        /// <summary>
+        /// オブジェクトの削除を実行する
+        /// </summary>
+        private void Shred(GameObject target)
+        {
+            Destroy(target);
         }
     }
 }
