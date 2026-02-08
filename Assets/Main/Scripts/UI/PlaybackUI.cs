@@ -1,65 +1,87 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Main.InGame.Core; // MonochromeChange を参照するため
+using Main.InGame.Core;
 
-namespace Main.Player
+namespace Main.InGame.UI
 {
+    /// <summary>
+    /// モノクロ（再生）状態に応じて、UIのスプライト、サイズ、およびテキストを切り替える。
+    /// </summary>
     public class PlaybackUI : MonoBehaviour
     {
         [Header("外部参照")]
-        private MonochromeChange _monoChange;
+        [SerializeField] private Image targetImage;
+        [SerializeField] private TextMeshProUGUI statusText;
 
         [Header("スプライト設定")]
-        [SerializeField] private Image targetImage;
         [SerializeField] private Sprite normalSprite;
         [SerializeField] private Vector2 normalSize = new Vector2(100, 100);
         [SerializeField] private Sprite playbackSprite;
         [SerializeField] private Vector2 playbackSize = new Vector2(100, 100);
 
         [Header("テキスト設定")]
-        [SerializeField] private TextMeshProUGUI statusText;
         [SerializeField] private string normalString = "READY";
         [SerializeField] private string playbackString = "PLAYING";
 
-        // 前回の状態を覚えておくための変数（無駄な更新を避けるため）
-        private bool _lastState = false;
+        private MonochromeChange monoChange;
+        private bool lastState;
 
         private void Awake()
         {
-            _monoChange = FindFirstObjectByType<MonochromeChange>();
-            
-            // 初期状態の反映
-            UpdateUI(false);
+            InitializeReferences();
+            UpdateVisuals(false);
         }
 
         private void Update()
         {
-            if (_monoChange == null) return;
-
-            // MonochromeChange のフラグを直接監視
-            bool currentState = _monoChange.isMonochrome;
-
-            // 状態が変化したときだけUIを更新する
-            if (currentState != _lastState)
-            {
-                _lastState = currentState;
-                UpdateUI(currentState);
-            }
+            MonitorStateChange();
         }
 
-        private void UpdateUI(bool isMonochrome)
+        /// <summary>
+        /// 必要なシステムへの参照を初期化する
+        /// </summary>
+        private void InitializeReferences()
         {
-            if (targetImage != null)
-            {
-                targetImage.sprite = isMonochrome ? playbackSprite : normalSprite;
-                targetImage.rectTransform.sizeDelta = isMonochrome ? playbackSize : normalSize;
-            }
+            monoChange = FindFirstObjectByType<MonochromeChange>();
+        }
 
-            if (statusText != null)
-            {
-                statusText.text = isMonochrome ? playbackString : normalString;
-            }
+        /// <summary>
+        /// システムのモノクロフラグを監視し、変更があった場合のみUIを更新する
+        /// </summary>
+        private void MonitorStateChange()
+        {
+            if (monoChange == null) return;
+
+            bool currentState = monoChange.isMonochrome;
+            if (currentState == lastState) return;
+
+            lastState = currentState;
+            UpdateVisuals(currentState);
+        }
+
+        /// <summary>
+        /// 現在の状態に基づいてUIの表示を切り替える
+        /// </summary>
+        private void UpdateVisuals(bool isMonochrome)
+        {
+            UpdateImage(isMonochrome);
+            UpdateText(isMonochrome);
+        }
+
+        private void UpdateImage(bool isMonochrome)
+        {
+            if (targetImage == null) return;
+
+            targetImage.sprite = isMonochrome ? playbackSprite : normalSprite;
+            targetImage.rectTransform.sizeDelta = isMonochrome ? playbackSize : normalSize;
+        }
+
+        private void UpdateText(bool isMonochrome)
+        {
+            if (statusText == null) return;
+
+            statusText.text = isMonochrome ? playbackString : normalString;
         }
     }
 }

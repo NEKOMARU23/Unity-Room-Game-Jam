@@ -1,10 +1,14 @@
 using UnityEngine;
-using Main.InGame.Core;     // MonochromeChange
-using Main.Player;          // PlayerHealth
+using Main.InGame.Core;
+using Main.InGame.Player;
 using UnityEngine.InputSystem;
 
-namespace Main.Damage
+namespace Main.InGame.GameGimmick
 {
+    /// <summary>
+    /// プレイヤーにダメージを与える判定を管理するクラス。
+    /// 特定の入力状態や世界の状態でダメージの無効化を判定する。
+    /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public class DamageSource : MonoBehaviour
     {
@@ -12,17 +16,31 @@ namespace Main.Damage
         [SerializeField] private int damageAmount = 1;
         [SerializeField] private bool canHitMultipleTimes = true;
 
-        public int DamageAmount => damageAmount;
+        private const string PLAYER_TAG = "Player";
 
-        private MonochromeChange _monoChange;
+        private MonochromeChange monoChange;
+        private Keyboard currentKeyboard;
+
+        /// <summary>
+        /// ダメージ量の取得
+        /// </summary>
+        public int DamageAmount => damageAmount;
 
         private void Awake()
         {
-            _monoChange = FindFirstObjectByType<MonochromeChange>();
+            InitializeReferences();
+        }
 
-            if (_monoChange == null)
+        /// <summary>
+        /// 参照の初期化とキャッシュ
+        /// </summary>
+        private void InitializeReferences()
+        {
+            monoChange = FindFirstObjectByType<MonochromeChange>();
+            currentKeyboard = Keyboard.current;
+
+            if (monoChange == null)
             {
-                // 設定ミス防止のため、初期化時のエラーログのみ残しています
                 Debug.LogError($"[DamageSource] {gameObject.name}: MonochromeChange がシーン内に見つかりません。");
             }
         }
@@ -30,46 +48,44 @@ namespace Main.Damage
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!enabled) return;
-
-            if (!other.CompareTag("Player")) return;
-
-            // 無敵条件（Eキー押下中 または モノクロ世界）なら処理を中断
+            if (!other.CompareTag(PLAYER_TAG)) return;
             if (!CanDamage()) return;
 
             ExecuteDamage(other);
-
-            if (!canHitMultipleTimes)
-            {
-                enabled = false;
-            }
+            HandleHitCount();
         }
 
         /// <summary>
-        /// ダメージを与えてよいかどうかの最終判定
+        /// ダメージ適用可否の判定。
+        /// Eキー押下中、またはモノクロ化している場合は無効。
         /// </summary>
         private bool CanDamage()
         {
-            bool isEPressed =
-                Keyboard.current != null &&
-                Keyboard.current.eKey.isPressed;
+            bool isEPressed = currentKeyboard != null && currentKeyboard.eKey.isPressed;
+            bool isWorldMono = monoChange != null && monoChange.isMonochrome;
 
-            bool isWorldMono =
-                _monoChange != null &&
-                _monoChange.isMonochrome;
-
-            // いずれかの条件を満たしていれば無敵状態（CanDamage = false）
             return !(isEPressed || isWorldMono);
         }
 
         /// <summary>
-        /// 実際にダメージを与える処理
+        /// 対象のPlayerHealthコンポーネントを介してダメージを適用
         /// </summary>
         private void ExecuteDamage(Collider2D playerCollider)
         {
-            var playerHealth = playerCollider.GetComponent<PlayerHealth>();
-            if (playerHealth != null)
+            if (playerCollider.TryGetComponent<PlayerHealth>(out var playerHealth))
             {
                 playerHealth.TakeDamage(damageAmount, gameObject.name);
+            }
+        }
+
+        /// <summary>
+        /// 複数回ヒット設定に基づいた有効状態の制御
+        /// </summary>
+        private void HandleHitCount()
+        {
+            if (!canHitMultipleTimes)
+            {
+                enabled = false;
             }
         }
     }

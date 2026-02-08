@@ -2,8 +2,11 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Main.InGame.Core;
 
-namespace Main.Player
+namespace Main.InGame.Player
 {
+    /// <summary>
+    /// InputSystemからの入力を受け取り、移動・攻撃・録画・再生などの各システムへ命令を仲介する。
+    /// </summary>
     public class PlayerController : MonoBehaviour
     {
         private PlayerMove playerMove;
@@ -13,88 +16,109 @@ namespace Main.Player
         private RecordingPlaybackSystem playbackSystem;
         private MonochromeChangeEffect monochromeChangeEffect;
 
-        void Awake()
+        private void Awake()
+        {
+            InitializeReferences();
+        }
+
+        /// <summary>
+        /// 必要な各システムへの参照を取得しキャッシュする
+        /// </summary>
+        private void InitializeReferences()
         {
             playerMove = GetComponent<PlayerMove>();
             playerAnim = GetComponent<PlayerAnimation>();
+
             monochromeChange = FindAnyObjectByType<MonochromeChange>();
             recordingSystem = FindAnyObjectByType<RecordingSystem>();
             playbackSystem = FindAnyObjectByType<RecordingPlaybackSystem>();
             monochromeChangeEffect = FindAnyObjectByType<MonochromeChangeEffect>(FindObjectsInactive.Include);
         }
 
-
-
-        // 横移動 (A, Dキー)
         public void OnMove(InputValue value)
         {
-            if (playerMove != null)
-                playerMove.OnMoveInput(value.Get<Vector2>());
+            if (playerMove == null) return;
+            
+            playerMove.OnMoveInput(value.Get<Vector2>());
         }
 
-        // ジャンプ (Spaceキー)
         public void OnJump(InputValue value)
         {
-            if (playerMove != null && value.isPressed)
-            {
-                playerMove.DoJump();
-            }
+            if (playerMove == null || !value.isPressed) return;
+            
+            playerMove.DoJump();
         }
 
         public void OnAttack(InputValue value)
         {
-            if (playerAnim != null && value.isPressed)
-            {
-                // PlayerMoveの接地判定をチェック
-                if (playerMove != null && playerMove.IsGrounded())
-                {
-                    playerAnim.PlayAttack();
-                }
-            }
+            if (playerAnim == null || !value.isPressed) return;
+            if (playerMove == null || !playerMove.IsGrounded()) return;
+
+            playerAnim.PlayAttack();
         }
 
+        /// <summary>
+        /// 画面状態の切り替え（カラー/モノクロ・再生停止）を制御
+        /// </summary>
         public void OnScreenChange(InputValue value)
         {
-            if (value.isPressed)
+            if (!value.isPressed) return;
+
+            if (playbackSystem != null && playbackSystem.IsPlaying)
             {
-                // 再生中は「停止してカラーに戻す」
-                if (playbackSystem != null && playbackSystem.IsPlaying)
-                {
-                    playbackSystem.StopPlayback();
-                    if (recordingSystem != null) recordingSystem.ResetRecording();
-                    if (monochromeChange != null) monochromeChange.DisableMono();
-                    return;
-                }
-
-                // 既に白黒だけが有効になっている場合は解除
-                if (monochromeChange != null && monochromeChange.isMonochrome)
-                {
-                    monochromeChange.DisableMono();
-                    return;
-                }
-
-                // 録画があるときだけ白黒＋再生開始
-                if (recordingSystem == null || recordingSystem.LastClip == null) return;
-
-
-                if (monochromeChange != null) 
-                {
-                    monochromeChange.EnableMono();
-                    monochromeChangeEffect.gameObject.SetActive(true);
-                }
-                if (playbackSystem != null) playbackSystem.Play(recordingSystem.LastClip);
+                StopAllSystems();
+                return;
             }
+
+            if (monochromeChange != null && monochromeChange.isMonochrome)
+            {
+                monochromeChange.DisableMono();
+                return;
+            }
+
+            TryStartPlayback();
         }
 
-        // Input Actions に "Record" を作って Q を割り当てる場合はこれを呼べます
         public void OnRecording(InputValue value)
         {
-            if (value.isPressed)
+            if (!value.isPressed) return;
+
+            // モノクロ状態や再生中は録画を制限
+            if (monochromeChange != null && monochromeChange.isMonochrome) return;
+            if (playbackSystem != null && playbackSystem.IsPlaying) return;
+
+            ToggleRecording();
+        }
+
+        /// <summary>
+        /// 再生、録画、モノクロの全システムをリセットしてカラーに戻す
+        /// </summary>
+        private void StopAllSystems()
+        {
+            if (playbackSystem != null) playbackSystem.StopPlayback();
+            if (recordingSystem != null) recordingSystem.ResetRecording();
+            if (monochromeChange != null) monochromeChange.DisableMono();
+        }
+
+        /// <summary>
+        /// 録画クリップが存在する場合に再生処理を開始する
+        /// </summary>
+        private void TryStartPlayback()
+        {
+            if (recordingSystem == null || recordingSystem.LastClip == null) return;
+
+            if (monochromeChange != null)
             {
-                // 再生中（モノクロ）に録画開始/停止されると状態が壊れやすいので無効化
-                if (monochromeChange != null && monochromeChange.isMonochrome) return;
-                if (playbackSystem != null && playbackSystem.IsPlaying) return;
-                ToggleRecording();
+                monochromeChange.EnableMono();
+                if (monochromeChangeEffect != null)
+                {
+                    monochromeChangeEffect.gameObject.SetActive(true);
+                }
+            }
+
+            if (playbackSystem != null)
+            {
+                playbackSystem.Play(recordingSystem.LastClip);
             }
         }
 
@@ -102,8 +126,14 @@ namespace Main.Player
         {
             if (recordingSystem == null) return;
 
-            if (recordingSystem.IsRecording) recordingSystem.StopRecording();
-            else recordingSystem.StartRecording();
+            if (recordingSystem.IsRecording)
+            {
+                recordingSystem.StopRecording();
+            }
+            else
+            {
+                recordingSystem.StartRecording();
+            }
         }
     }
 }

@@ -1,11 +1,16 @@
 using UnityEngine;
+
 using MainS.Audio;
 
-public class TitleDirector : MonoBehaviour
+namespace Main.InGame
 {
-    void Start()
+    /// <summary>
+    /// タイトル画面の演出を管理するディレクタークラス。   
+    public class TitleDirector : MonoBehaviour
     {
-        // シーンが始まったらタイトルBGMを再生
-        AudioManager.Instance.PlayBGM("Title");
+        void Start()
+        {
+            AudioManager.Instance.PlayBGM("Title");
+        }
     }
 }

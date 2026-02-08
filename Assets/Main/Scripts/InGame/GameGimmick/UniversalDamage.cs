@@ -1,43 +1,48 @@
 using UnityEngine;
-using Main.Player; // PlayerHealth を参照
+using Main.InGame.Player;
 
-namespace Main.Damage
+namespace Main.InGame.GameGimmick
 {
     /// <summary>
-    /// 接触したプレイヤーに即座にダメージを与えるシンプルなクラス
+    /// 接触したプレイヤーに対してダメージを適用する汎用クラス
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
-    public class UniversalDam : MonoBehaviour
+    public class UniversalDamage : MonoBehaviour
     {
         [Header("Damage Settings")]
         [SerializeField] private int damageAmount = 1;
-        [Tooltip("一度当たったらこのコンポーネントを無効化するか（単発トラップ用）")]
         [SerializeField] private bool canHitMultipleTimes = true;
+
+        private const string PLAYER_TAG = "Player";
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            // このコンポーネントが無効なら処理しない
             if (!enabled) return;
+            if (!other.CompareTag(PLAYER_TAG)) return;
 
-            // プレイヤーに当たったかチェック
-            if (other.CompareTag("Player"))
+            ProcessDamage(other);
+        }
+
+        /// <summary>
+        /// ダメージ処理の実行と、設定に基づいたコンポーネントの無効化管理
+        /// </summary>
+        private void ProcessDamage(Collider2D playerCollider)
+        {
+            ExecuteDamage(playerCollider);
+
+            if (!canHitMultipleTimes)
             {
-                ExecuteDamage(other);
-
-                // 単発設定ならスクリプトをOFFにする
-                if (!canHitMultipleTimes)
-                {
-                    enabled = false;
-                }
+                enabled = false;
             }
         }
 
+        /// <summary>
+        /// PlayerHealthコンポーネントを取得し、ダメージを適用する
+        /// </summary>
         private void ExecuteDamage(Collider2D playerCollider)
         {
-            var health = playerCollider.GetComponent<PlayerHealth>();
-            if (health != null)
+            if (playerCollider.TryGetComponent<PlayerHealth>(out var health))
             {
-                // ダメージ実行（発生源として自分のオブジェクト名を渡す）
                 health.TakeDamage(damageAmount, gameObject.name);
             }
         }
